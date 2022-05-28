@@ -6,7 +6,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrossBind", "CrossBind\Cros
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Engine.React", "Engine.React\Engine.React.csproj", "{EDC06E9E-A008-488B-B3E7-6F76834DEB80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossBind.Parse", "CrossBind.Parse\CrossBind.Parse.csproj", "{8570FA2F-95FD-46D1-BA4B-0EF864EA9D3F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossBind.Compiler", "CrossBind.Compiler\CrossBind.Compiler.csproj", "{8570FA2F-95FD-46D1-BA4B-0EF864EA9D3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossBind.Model", "CrossBind.Model\CrossBind.Model.csproj", "{2172D200-B934-4B72-A97B-7DB0CAF39DD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,6 +30,10 @@ Global
 		{8570FA2F-95FD-46D1-BA4B-0EF864EA9D3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8570FA2F-95FD-46D1-BA4B-0EF864EA9D3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8570FA2F-95FD-46D1-BA4B-0EF864EA9D3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2172D200-B934-4B72-A97B-7DB0CAF39DD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2172D200-B934-4B72-A97B-7DB0CAF39DD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2172D200-B934-4B72-A97B-7DB0CAF39DD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2172D200-B934-4B72-A97B-7DB0CAF39DD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

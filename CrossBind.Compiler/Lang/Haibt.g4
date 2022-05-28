@@ -1,4 +1,4 @@
-grammar haibt;
+grammar Haibt;
 
 fragment DIGIT : [0-9] ;
 fragment LOWERCASE  : [a-z] ;
