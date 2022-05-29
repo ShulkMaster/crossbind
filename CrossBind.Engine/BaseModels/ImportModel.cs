@@ -1,4 +1,4 @@
-﻿namespace CrossBind.Model;
+﻿namespace CrossBind.Engine.BaseModels;
 
 public class ImportModel
 {

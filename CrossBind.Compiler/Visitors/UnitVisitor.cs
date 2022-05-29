@@ -1,5 +1,5 @@
 ﻿using CrossBind.Compiler.Visitors.Component;
-using CrossBind.Model;
+using CrossBind.Engine.BaseModels;
 
 namespace CrossBind.Compiler.Visitors;
 

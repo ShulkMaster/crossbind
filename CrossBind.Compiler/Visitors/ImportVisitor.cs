@@ -1,4 +1,4 @@
-﻿using CrossBind.Model;
+﻿using CrossBind.Engine.BaseModels;
 
 namespace CrossBind.Compiler.Visitors;
 

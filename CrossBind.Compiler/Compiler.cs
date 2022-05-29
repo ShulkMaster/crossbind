@@ -24,7 +24,7 @@ public static class Compiler
         var sources = new List<string>();
         foreach (var engine in engines)
         {
-            var res = engine.CompileUnit("Button", false);
+            var res = engine.CompileUnit(gg, false);
             sources.Add(res);
         }
 

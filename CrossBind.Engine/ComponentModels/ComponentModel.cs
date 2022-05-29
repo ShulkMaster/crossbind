@@ -1,4 +1,6 @@
-﻿namespace CrossBind.Model.Components;
+﻿using CrossBind.Engine.BaseModels;
+
+namespace CrossBind.Engine.ComponentModels;
 
 public class ComponentModel : BindModel
 {

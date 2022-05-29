@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CrossBind.Engine\CrossBind.Engine.csproj" />
-    <ProjectReference Include="..\CrossBind.Model\CrossBind.Model.csproj" />
   </ItemGroup>
 
   <ItemGroup>

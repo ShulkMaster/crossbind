@@ -1,4 +1,4 @@
-﻿namespace CrossBind.Model;
+﻿namespace CrossBind.Engine.BaseModels;
 
 public record UnitModel(
     string ModuleHash,
