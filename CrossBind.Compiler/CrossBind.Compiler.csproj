@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CrossBind.Model\CrossBind.Model.csproj" />
+    <ProjectReference Include="..\CrossBind.Engine\CrossBind.Engine.csproj" />
   </ItemGroup>
 
   <ItemGroup>
