@@ -16,8 +16,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Model" />
     <Folder Include="Parser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CrossBind.Model\CrossBind.Model.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.10.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="code\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

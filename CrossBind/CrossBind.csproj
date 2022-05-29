@@ -52,7 +52,6 @@
 
 	<ItemGroup>
 	  <PackageReference Include="AntDesign" Version="0.10.6" />
-	  <PackageReference Include="Antlr4.Runtime.Standard" Version="4.10.1" />
 	</ItemGroup>
 
 </Project>

@@ -23,15 +23,19 @@ CANNON_COMP: 'button' | 'select' | 'textbox';
 // must be last to avoid overlapping
 IDENTIFIER: VALID_START + VALID_FOLLOW*;
 
-import_statement: FROM STRING IMPORT '{' IDENTIFIER (',' IDENTIFIER)* '}' SEMI;
-
-comp_declaration: 
-    COMPONENT IDENTIFIER (EXTENDS CANNON_COMP)? '{' '}';
-    
-comp_file:
-    import_statement*
-    comp_declaration+
+translationUnit:
+    importStatement*
+    (libFile | compDeclaration)+
     EOF
     ;
+    
+importStatement: FROM STRING IMPORT '{' IDENTIFIER (',' IDENTIFIER)* '}' SEMI;
 
+libFile: 
+    ('lib' '{' '}')+
+    ;
 
+compDeclaration: 
+    COMPONENT IDENTIFIER (EXTENDS CANNON_COMP)? '{' body '}';
+
+body: .*?;
