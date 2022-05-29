@@ -1,0 +1,20 @@
+﻿@page "/"
+
+<h1>Button component preview</h1>
+
+<div id="control-outlet">
+    <CrossButton @ref="btn" />
+</div>
+<PropertiesTool @ref="bar"/>
+<p>@btn?.Text</p>
+
+@code {
+    CrossButton? btn = null;
+    PropertiesTool? bar = null;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        bar.Eref = btn;
+    }
+}

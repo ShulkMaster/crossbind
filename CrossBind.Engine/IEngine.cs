@@ -1,6 +1,4 @@
-﻿using CrossBind.Model;
-
-namespace CrossBind.Engine;
+﻿namespace CrossBind.Engine;
 
 public interface IEngine
 {
@@ -10,7 +8,7 @@ public interface IEngine
     public int PathVersion { get; }
     public EngineTarget Target { get; }
 
-    public string CompileUnit(UnitModel model, bool production);
+    public string CompileUnit(string model, bool production);
 
 }
 
