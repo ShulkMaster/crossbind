@@ -4,14 +4,13 @@ namespace CrossBind.Compiler.Visitors.Component;
 
 public class ComponentVisitor: HaibtBaseVisitor<ComponentModel>
 {
-
-    public static Extendable ToExtendable(string? extend)
+    private static Extendable ToExtendable(string? extend)
     {
-        return extend?.ToUpper() switch
+        return extend switch
         {
-            nameof(Extendable.Button) => Extendable.Button,
-            nameof(Extendable.Select) => Extendable.Select,
-            nameof(Extendable.TextBox) => Extendable.TextBox,
+            "button" => Extendable.Button,
+            "select" => Extendable.Select,
+            "textbox" => Extendable.TextBox,
             _ => Extendable.Component,
         };
     }

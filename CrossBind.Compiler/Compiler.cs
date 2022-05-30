@@ -31,7 +31,7 @@ public static class Compiler
         for (var index = 0; index < sources.Count; index++)
         {
             string source = sources[index];
-            using var outputStream = new FileStream($"code{index}.ts", FileMode.Create);
+            using var outputStream = new FileStream($"code{index}.tsx", FileMode.Create);
             var writer = new StreamWriter(outputStream);
             writer.Write(source);
             writer.Flush();
