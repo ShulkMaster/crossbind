@@ -2,17 +2,25 @@
 using CrossBind.Compiler.Plugin;
 using CrossBind.Compiler.Visitors;
 using CrossBind.Engine;
+using CommandLine;
+using CrossBind.Compiler.Commands;
 
 namespace CrossBind.Compiler;
 
 public static class Compiler
 {
-    private const string _basePath = "code";
-
     public static int Main(string[] args)
     {
+        var result = CommandLine.Parser.Default.ParseArguments<Project>(args)
+            .WithParsed(HandleProject)
+            .WithNotParsed(HandleError);
+        if (result.Errors.Any())
+        {
+            return -1;
+        }
+
         var engines = new PluginLoader().FindEnginesForTarget(EngineTarget.React);
-        var fileStream = File.OpenRead(Path.Combine(_basePath, "button.hbt"));
+        var fileStream = File.OpenRead(Path.Combine("code", "button.hbt"));
         var unitVisitor = new UnitVisitor();
         var charStream = new AntlrInputStream(fileStream);
         var lexer = new HaibtLexer(charStream);
@@ -40,5 +48,23 @@ public static class Compiler
         }
 
         return 0;
+    }
+
+    private static void HandleError(IEnumerable<Error> errors)
+    {
+        foreach (var error in errors)
+        {
+            Console.Error.WriteLine(error.Tag.ToString());
+        }
+    }
+
+    private static void HandleProject(Project project)
+    {
+        Console.WriteLine(project.Name);
+        Console.WriteLine(project.OutputDir);
+        foreach (string target in project.Targets)
+        {
+            Console.WriteLine(target);
+        }
     }
 }
