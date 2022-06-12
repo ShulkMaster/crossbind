@@ -5,7 +5,7 @@ namespace CrossBind.Engine.ComponentModels;
 public class ComponentModel : BindModel
 {
     public readonly Extendable Extends;
-    public ComponentBody Body { get; } = new ();
+    public ComponentBody Body { get; init; } = new ();
     
     public ComponentModel(Extendable extends): base(ModelType.Component)
     {

@@ -19,10 +19,11 @@ public class ComponentVisitor: HaibtBaseVisitor<ComponentModel>
     public override ComponentModel VisitCompDeclaration(HaibtParser.CompDeclarationContext context)
     {
         string? extends = context.CANNON_COMP().GetText();
+        var body = new BodyVisitor().VisitBody(context.body());
         var model = new ComponentModel(ToExtendable(extends))
         {
             Name = context.IDENTIFIER().GetText(),
-            Body = context.body().GetText()
+            Body = body,
         };
         return model;
     }
