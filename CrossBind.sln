@@ -10,6 +10,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossBind.Engine", "CrossBi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossBind.Lang", "CrossBind.Lang\CrossBind.Lang.csproj", "{BC3DF6A2-29F6-472B-BD63-25E45517BCF0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossBind", "CrossBind\CrossBind.csproj", "{00C48C5D-EBF1-48DF-84A6-2A0935046954}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossBind.Compiler.Test", "CrossBind.Compiler.Test\CrossBind.Compiler.Test.csproj", "{7F357D12-F0DD-483B-BED1-850E6F319573}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +36,14 @@ Global
 		{BC3DF6A2-29F6-472B-BD63-25E45517BCF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC3DF6A2-29F6-472B-BD63-25E45517BCF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC3DF6A2-29F6-472B-BD63-25E45517BCF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00C48C5D-EBF1-48DF-84A6-2A0935046954}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00C48C5D-EBF1-48DF-84A6-2A0935046954}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00C48C5D-EBF1-48DF-84A6-2A0935046954}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00C48C5D-EBF1-48DF-84A6-2A0935046954}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F357D12-F0DD-483B-BED1-850E6F319573}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F357D12-F0DD-483B-BED1-850E6F319573}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F357D12-F0DD-483B-BED1-850E6F319573}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F357D12-F0DD-483B-BED1-850E6F319573}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

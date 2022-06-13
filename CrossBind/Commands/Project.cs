@@ -1,6 +1,6 @@
 ﻿using CommandLine;
 
-namespace CrossBind.Compiler.Commands;
+namespace CrossBind.Commands;
 
 [Verb("project", HelpText = "Creates a new project with the define options")]
 public class Project

@@ -33,10 +33,8 @@ FROM: 'from';
 SINGLEQ: '\'';
 STRING: SINGLEQ .*? SINGLEQ;
 Variant: 'variant';
-HEX_COLOR: 
-      '#' HEX HEX HEX
-    | '#' HEX HEX HEX HEX HEX HEX
-    ;
+HEX_COLOR: '#' (HEX HEX HEX HEX HEX HEX| HEX HEX HEX);
+
 CANNON_COMP: 'button' | 'select' | 'textbox';
 // must be last to avoid overlapping
 IDENTIFIER: VALID_START + VALID_FOLLOW*;
