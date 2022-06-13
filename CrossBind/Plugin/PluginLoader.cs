@@ -2,7 +2,7 @@
 using CrossBind.Compiler.exceptions;
 using CrossBind.Engine;
 
-namespace CrossBind.Compiler.Plugin;
+namespace CrossBind.Plugin;
 
 public class PluginLoader
 {
