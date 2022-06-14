@@ -11,7 +11,7 @@ public class BodyVisitor : HaibtBaseVisitor<ComponentBody>
         var body = new ComponentBody();
         foreach (var cssRule in context.css_statement())
         {
-            body.BaseStyles.Add(styleVisitor.VisitCss_statement(cssRule));
+            body.BaseStyles.Add(styleVisitor.Visit(cssRule));
         }
         
         foreach (var variant in context.variant())

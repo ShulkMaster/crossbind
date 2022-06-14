@@ -59,8 +59,9 @@ body:
 ;
 
 css_statement: 
-      (BackgroundColor ':' HEX_COLOR SEMI)
-    | ( Border ':' '{' .*? '}')
+      (BackgroundColor ':' HEX_COLOR SEMI) #bgColor
+    | ( Border ':' NUMBER IDENTIFIER SEMI) #inlineBorder
+    | ( Border ':' '{' .*? '}') #compoundBorder
     ;
     
 variant : 

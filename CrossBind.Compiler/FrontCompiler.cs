@@ -2,32 +2,38 @@
 using CrossBind.Compiler.Error;
 using CrossBind.Compiler.Visitors;
 using CrossBind.Engine.BaseModels;
-using CrossBind.Engine.ComponentModels;
+using LanguageExt.Common;
 
 namespace CrossBind.Compiler;
 
-public static class Compiler
+public static class FrontCompiler
 {
-    public static UnitModel CompileUnitFile(string filePath)
+    public static Result<UnitModel> CompileUnitFile(string filePath)
     {
         var fileStream = File.OpenRead(filePath);
+        var listener = new HaibtLexerErrorListener();
         var unitVisitor = new UnitVisitor();
         var charStream = new AntlrInputStream(fileStream);
         var lexer = new HaibtLexer(charStream);
-        lexer.AddErrorListener(new ConsoleErrorListener<int>());
+        lexer.AddErrorListener(listener);
         var stream = new CommonTokenStream(lexer);
         var parse = new HaibtParser(stream);
         parse.AddErrorListener(new ErrorLister());
-        if (parse.NumberOfSyntaxErrors > 0)
+        var parseTree = parse.translationUnit();
+        if (parse.NumberOfSyntaxErrors > 0 || listener.GetErrors().Any())
         {
             Console.Out.WriteLine($"Se detectaros {parse.NumberOfSyntaxErrors} errores");
-            return new UnitModel("", filePath, Array.Empty<ImportModel>(), Array.Empty<ComponentModel>());
+            foreach (string error in listener.GetErrors())
+            {
+                Console.WriteLine(error);
+            }
+            return new Result<UnitModel>(new InvalidDataException());
         }
 
-        var gg = unitVisitor.VisitTranslationUnit(parse.translationUnit());
+        var gg = unitVisitor.VisitTranslationUnit(parseTree);
         fileStream.Close();
         fileStream.Dispose();
 
-        return new UnitModel("", filePath, Array.Empty<ImportModel>(), Array.Empty<ComponentModel>());
+        return gg;
     }
 }

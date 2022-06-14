@@ -83,6 +83,7 @@ Behaves";
         var charStream = new AntlrInputStream(hexCode);
         var lexer = new HaibtLexer(charStream);
         lexer.AddErrorListener(listener);
+        lexer.AddErrorListener(_listener);
         var tokens = lexer.GetAllTokens();
         var errors = listener.GetErrors();
         // Lexer will try to match as much as possible so invalid code as #43544

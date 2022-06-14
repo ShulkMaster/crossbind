@@ -18,6 +18,6 @@ component ButtonApp extends button {
     backgroundColor : #F0D;
     variant mode;
     variant kind;
-    border: 1px solid #ddd;
+    border: 1px solid #D4D5D0;
 }";
 }

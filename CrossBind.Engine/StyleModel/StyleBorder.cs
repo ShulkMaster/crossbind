@@ -16,14 +16,36 @@ public record BorderRule
 
 public class StyleBorder : ComponentStyle
 {
+    private readonly string _stringValue;
+
     #region Constants
 
     private const int Top = 0;
     private const int Right = 1;
     private const int Bottom = 2;
     private const int Left = 3;
+    public const string BorderKey = "border";
 
     #endregion
+
+    public BorderRule?[] GetBorder { get; } = { null, null, null, null };
+
+    public override string StringValue
+    {
+        get
+        {
+            var isHorizontal = GetBorder[Left] == GetBorder[Right];
+            var isVertical = GetBorder[Left] == GetBorder[Right];
+            var anyBorder = GetBorder[0];
+            if (isHorizontal && isVertical)
+            {
+                return $"{BorderKey} : {anyBorder?.Stroke}px {anyBorder?.Color} {anyBorder?.BorderType.ToString().ToLower()}";
+            }
+            
+            return "";
+        }
+        init => _stringValue = value;
+    }
 
     public void SetTop(BorderRule topBorder)
     {
@@ -63,5 +85,4 @@ public class StyleBorder : ComponentStyle
         SetHorizontal(border);
     }
 
-    public BorderRule?[] GetBorder { get; } = { null, null, null, null };
 }

@@ -25,4 +25,14 @@
       <ProjectReference Include="..\CrossBind.Compiler\CrossBind.Compiler.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="ParserTest" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="code\*">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>
