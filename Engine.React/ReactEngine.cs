@@ -7,6 +7,7 @@ namespace Engine.React;
 
 public class ReactEngine : IEngine
 {
+    public string PluginId => "React.Official";
     public string PluginName => "React Engine Official";
     public int MajorVersion => 0;
     public int MinorVersion => 1;

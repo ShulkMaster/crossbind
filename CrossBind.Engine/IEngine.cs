@@ -4,6 +4,7 @@ namespace CrossBind.Engine;
 
 public interface IEngine
 {
+    public string PluginId { get; }
     public string PluginName { get; }
     public int MajorVersion { get; }
     public int MinorVersion { get; }
@@ -17,5 +18,5 @@ public interface IEngine
 public enum EngineTarget
 {
     React,
-    vue,
+    Vue,
 }

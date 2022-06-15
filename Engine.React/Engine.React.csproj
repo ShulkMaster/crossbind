@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <EnableDynamicLoading>true</EnableDynamicLoading>
-    <OutDir>..\CrossBind.Compiler\bin\$(Configuration)\$(TargetFramework)\plugins</OutDir>
+    <OutDir>..\CrossBind\bin\$(Configuration)\$(TargetFramework)\plugins</OutDir>
   </PropertyGroup>
 
   <ItemGroup>
