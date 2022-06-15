@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using CrossBind.Compiler.exceptions;
 using CrossBind.Engine;
 
 namespace CrossBind.Plugin;
@@ -14,21 +13,24 @@ public class PluginLoader
         return Directory.EnumerateFiles(BasePath, "*.dll");
     }
 
-    private static IEngine LoadEngine(Assembly assembly)
+    private static void LoadEngine(Assembly assembly, EngineTarget target, out IEngine? engine)
     {
         var engineType = assembly.GetTypes()
             .FirstOrDefault(t => typeof(IEngine).IsAssignableFrom(t));
 
         if (engineType is null)
         {
-            string availableTypes = string.Join("\n", assembly.GetTypes().Select(t => t.FullName));
-            Console.WriteLine(availableTypes);
-            throw new InvalidAssemblyException(
-                $"Can't find any type which implements {nameof(IEngine)} in {assembly} from {assembly.Location}");
+            engine = null;
+            return;
         }
 
-        var result = Activator.CreateInstance(engineType) as IEngine;
-        return result!;
+        engine = Activator.CreateInstance(engineType) as IEngine;
+        if (engine?.Target == target)
+        {
+            return;
+        }
+
+        engine = null;
     }
 
     private Assembly LoadPlugin(string relativePath)
@@ -46,7 +48,12 @@ public class PluginLoader
             try
             {
                 var pluginAssembly = LoadPlugin(dll);
-                list.Add(LoadEngine(pluginAssembly));
+                LoadEngine(pluginAssembly, target, out var e);
+                if (e is not null)
+                {
+                    list.Add(e);
+                }
+
             }
             catch (Exception e)
             {

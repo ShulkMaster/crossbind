@@ -16,7 +16,7 @@ public record BorderRule
 
 public class StyleBorder : ComponentStyle
 {
-    private readonly string _stringValue;
+    private readonly string _stringValue = string.Empty;
 
     #region Constants
 
@@ -34,15 +34,15 @@ public class StyleBorder : ComponentStyle
     {
         get
         {
-            var isHorizontal = GetBorder[Left] == GetBorder[Right];
-            var isVertical = GetBorder[Left] == GetBorder[Right];
+            bool isHorizontal = GetBorder[Left] == GetBorder[Right];
+            bool isVertical = GetBorder[Left] == GetBorder[Right];
             var anyBorder = GetBorder[0];
             if (isHorizontal && isVertical)
             {
                 return $"{BorderKey} : {anyBorder?.Stroke}px {anyBorder?.Color} {anyBorder?.BorderType.ToString().ToLower()}";
             }
             
-            return "";
+            return $"{BorderKey} : undefined;";
         }
         init => _stringValue = value;
     }

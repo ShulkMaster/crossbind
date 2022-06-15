@@ -93,13 +93,14 @@ public static class Program
                 u =>
                 {
                     Console.WriteLine("Unit parsed: " + source);
-                    string result = engine.CompileUnit(u, false);
-                    string filename = source.Split(Path.DirectorySeparatorChar)[^1];
-                    filename = Path.ChangeExtension(filename, ".tsx");
-                    string filePath = Path.Combine(command.OutputDir, filename);
-                    using var file = File.CreateText(filePath);
-                    file.WriteLine(result);
+                    var files = engine.CompileUnit(u, false);
+                    foreach (var file in files)
+                    {
+                        using var fileStream = File.CreateText($"{command.OutputDir}/{file.FileName}.{file.Extension}");
+                        fileStream.WriteLine(file.SourceCode);
+                    }
                     return Unit.Default;
+
                 },
                 e =>
                 {

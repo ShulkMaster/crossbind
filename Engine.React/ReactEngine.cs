@@ -2,6 +2,8 @@
 using CrossBind.Engine;
 using CrossBind.Engine.BaseModels;
 using CrossBind.Engine.ComponentModels;
+using CrossBind.Engine.Generated;
+using CrossBind.Engine.StyleModel;
 
 namespace Engine.React;
 
@@ -14,7 +16,7 @@ public class ReactEngine : IEngine
     public int PathVersion => 0;
     public EngineTarget Target => EngineTarget.React;
 
-    private static void CompileComponent(ComponentModel model, StringBuilder sb)
+    private static SourceFile CompileComponent(ComponentModel model, StringBuilder sb)
     {
         sb.Append(DomReactTypes.GetReactImports(model.Extends));
         (string typeName, string typeDefinition) = DomReactTypes.GetDomType(model.Extends);
@@ -40,37 +42,72 @@ public class ReactEngine : IEngine
         }
 
         sb.Append($") => {{\n// Todo fill the code\n return <{tag} {{...props}} />\n}};\n");
+        string styles = CompileStyle(model.Body.BaseStyles, model.Name);
+        return new SourceFile(model.Name, "css")
+        {
+            SourceCode = styles,
+            SourceName = model.ModuleId,
+        };
     }
-    
-    private static void CompileModel(BindModel model, StringBuilder sb)
+
+    private static SourceFile CompileModel(BindModel model, StringBuilder sb)
     {
         switch (model)
         {
             case ComponentModel cModel:
             {
-                CompileComponent(cModel, sb);
-                break;
+                return CompileComponent(cModel, sb);
             }
         }
+
+        return new SourceFile("", "");
     }
 
-    public string CompileUnit(UnitModel unit, bool production)
+    private static string CompileStyle(IEnumerable<ComponentStyle> styles, string baseName)
     {
-        var stringBuilder = new StringBuilder();
+        var sb = new StringBuilder();
+        sb.Append($".{baseName} {{\n");
+        foreach (var style in styles)
+        {
+            sb.Append($"  {style.Key}: ");
+            sb.Append(style.StringValue);
+            sb.Append(";\n");
+        }
+        sb.Append("}\n");
+        return sb.ToString();
+    }
+
+    public SourceFile[] CompileUnit(UnitModel unit, bool production)
+    {
+        var sb = new StringBuilder();
+        string baseName = Path.GetFileName(unit.FilePath);
+        int dotIndex = baseName.LastIndexOf('.');
+        string fileName = baseName[..dotIndex];
         foreach (var module in unit.Modules)
         {
-            stringBuilder.Append("import { ");
-            stringBuilder.AppendJoin(',', module.Simbols);
-            stringBuilder.Append(" } from ");
-            stringBuilder.Append(module.Path);
-            stringBuilder.Append(";\n");
+            sb.Append("import { ");
+            sb.AppendJoin(',', module.Simbols);
+            sb.Append(" } from ");
+            sb.Append(module.Path);
+            sb.Append(";\n");
         }
 
+        sb.Append("import './");
+        sb.Append(fileName);
+        sb.Append(".css';");
+
+        var files = new List<SourceFile>();
         foreach (var model in unit.Models)
         {
-            CompileModel(model, stringBuilder);
+            var source = CompileModel(model, sb);
+            files.Add(source);
         }
 
-        return stringBuilder.ToString();
+        files.Add(new SourceFile(fileName, "tsx")
+        {
+            SourceCode = sb.ToString(),
+            SourceName = unit.FilePath,
+        });
+        return files.ToArray();
     }
 }

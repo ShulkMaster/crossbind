@@ -8,7 +8,7 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
     {
         var visitBgColor = new ComponentStyle
         {
-            Key = context.BackgroundColor().GetText(),
+            Key = "background-color",
             StringValue = context.HEX_COLOR().GetText(),
         };
         return visitBgColor;
@@ -19,7 +19,7 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
         var border = new ComponentStyle
         {
             Key = StyleBorder.BorderKey,
-            StringValue = $"{context.NUMBER().GetText()}px {context.IDENTIFIER().GetText()} solid",
+            StringValue = $"{context.NUMBER().GetText()}px {context.IDENTIFIER().GetText()} {context.HEX_COLOR()}",
         };
         return border;
     }

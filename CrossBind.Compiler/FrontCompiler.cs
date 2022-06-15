@@ -12,7 +12,10 @@ public static class FrontCompiler
     {
         var fileStream = File.OpenRead(filePath);
         var listener = new HaibtLexerErrorListener();
-        var unitVisitor = new UnitVisitor();
+        var unitVisitor = new UnitVisitor()
+        {
+            FilePath = filePath,
+        };
         var charStream = new AntlrInputStream(fileStream);
         var lexer = new HaibtLexer(charStream);
         lexer.AddErrorListener(listener);
