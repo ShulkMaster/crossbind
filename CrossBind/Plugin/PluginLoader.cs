@@ -16,23 +16,8 @@ public class PluginLoader
 
     private static IEngine LoadEngine(Assembly assembly)
     {
-        Type? engineType = null;
-        foreach (var t in assembly.GetTypes())
-        {
-            if(t.Name.Contains("React"))
-            {
-                Console.WriteLine("This needs is " + typeof(IEngine).AssemblyQualifiedName);
-                foreach (var inter in t.GetInterfaces())
-                {
-                    Console.WriteLine("This shit is " + inter.AssemblyQualifiedName);
-                }
-            }
-            if (typeof(IEngine).IsAssignableFrom(t))
-            {
-                engineType = t;
-                break;
-            }
-        }
+        var engineType = assembly.GetTypes()
+            .FirstOrDefault(t => typeof(IEngine).IsAssignableFrom(t));
 
         if (engineType is null)
         {
@@ -49,11 +34,10 @@ public class PluginLoader
     private Assembly LoadPlugin(string relativePath)
     {
         string absolute = Path.GetFullPath(relativePath);
-        Console.WriteLine($"Loading commands from: {absolute}");
         return _context.LoadFromAssemblyPath(absolute);
     }
 
-    public IEnumerable<IEngine> FindEnginesForTarget(EngineTarget target)
+    public List<IEngine> FindEnginesForTarget(EngineTarget target)
     {
         var list = new List<IEngine>();
         var dlls = GetDllDirs();

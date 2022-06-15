@@ -22,7 +22,6 @@ public static class FrontCompiler
         var parseTree = parse.translationUnit();
         if (parse.NumberOfSyntaxErrors > 0 || listener.GetErrors().Any())
         {
-            Console.Out.WriteLine($"Se detectaros {parse.NumberOfSyntaxErrors} errores");
             foreach (string error in listener.GetErrors())
             {
                 Console.WriteLine(error);

@@ -60,7 +60,7 @@ body:
 
 css_statement: 
       (BackgroundColor ':' HEX_COLOR SEMI) #bgColor
-    | ( Border ':' NUMBER IDENTIFIER SEMI) #inlineBorder
+    | ( Border ':' NUMBER IDENTIFIER HEX_COLOR SEMI) #inlineBorder
     | ( Border ':' '{' .*? '}') #compoundBorder
     ;
     
