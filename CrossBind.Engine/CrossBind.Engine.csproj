@@ -13,7 +13,7 @@
 		<PackageVersion>0.1.0</PackageVersion>
 		<RepositoryUrl>https://dev.azure.com/sovize/_git/CrossBind</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <TargetFramework>net6.0</TargetFramework>
 		<Title>CrossBind.Engine</Title>
         <ImplicitUsings>enable</ImplicitUsings>

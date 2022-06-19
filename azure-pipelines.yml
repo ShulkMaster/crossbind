@@ -17,7 +17,7 @@ variables:
   buildPlatform: 'Any CPU'
   Configuration: 'Release'
   CEngine: 'CrossBind.Engine/CrossBind.Engine.csproj'
-  CEngineTest: 'CrossBind.Engine/CrossBind.Engine.csproj'
+  CEngineTest: 'CrossBind.Engine.Test/CrossBind.Engine.Test.csproj'
 
 jobs:
   - job: PullRequest
@@ -25,16 +25,33 @@ jobs:
     condition: eq(variables['Build.Reason'], 'PullRequest')
     steps:
       - task: DotNetCoreCLI@2
+        displayName: 'Restoring CrossBind Engine'
         inputs:
           command: 'restore'
           feedsToUse: 'select'
+          projects: 'CrossBind.Engine*/CrossBind.Engine*.csproj'
           vstsFeed: 'c02610e3-ed5a-4422-8dfc-732f5bdef937'
       - task: DotNetCoreCLI@2
         displayName: 'Compiling CrossBind Engine'
         inputs:
           command: 'build'
           projects: $(CEngine)
-          arguments: '--no-restore -c $(Configuration)'
+          arguments: '--no-restore -c $(Configuration) '
+      - task: DotNetCoreCLI@2
+        displayName: 'Compiling CrossBind Engine Test'
+        inputs:
+          command: 'build'
+          projects: $(CEngineTest)
+          arguments: '--no-restore --no-dependencies -c $(Configuration)'
+      - task: DotNetCoreCLI@2
+        name: 'TestingEngine'
+        displayName: 'Xunit: TestingEngine'
+        inputs:
+          command: 'test'
+          projects: $(CEngineTest)
+          arguments: '--no-build --configuration $(Configuration)'
+          testRunTitle: 'TestingEngine'
+          publishTestResults: true
       - task: DotNetCoreCLI@2
         name: 'PackagingEngine'
         displayName: 'Packaging Engine Plugin Interface'
@@ -45,10 +62,19 @@ jobs:
           nobuild: true
           includesymbols: true
           includesource: true
+          packDirectory: '$(Build.ArtifactStagingDirectory)/Engine'
           versioningScheme: 'off'
-      - task: PublishBuildArtifacts@1
+  - job: FrontendCompiler
+    displayName: 'Frontend Compiler Build Test'
+    dependsOn: PullRequest
+    steps:
+      - task: Bash@3
         inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)/Engine'
-          ArtifactName: 'assemblies'
-          publishLocation: 'Container'
+          targetType: 'inline'
+          script: |
+            echo 'Hello world'
+            ls CrossBind.Engine/bin/$(Configuration)
+            ls CrossBind.Engine/bin/$(Configuration)/net6.0
+
+
 
