@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<docs>
+    <class>
+        <summary>
+            This is the interface that every plugin must implement to be loaded by the frontend compiler
+            and generate the target code
+        </summary>
+    </class>
+    <PluginId>
+        <summary>
+            Unique identifier for the plugin, spaces and non ACSII caracters are nor allow, this ID is use
+            for by the runtime to resolve when two or more <see cref="T:CrossBind.Engine.IEngine">Engines</see>
+            are capable of output to the same requested target
+        </summary>
+    </PluginId>
+    <CompileUnitFile>
+        <summary>
+            Called for every CMU loaded and parsed from a file on dics
+        </summary>
+    </CompileUnitFile>
+</docs>
