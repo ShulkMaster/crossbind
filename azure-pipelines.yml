@@ -75,6 +75,3 @@ jobs:
             echo 'Hello world'
             ls CrossBind.Engine/bin/$(Configuration)
             ls CrossBind.Engine/bin/$(Configuration)/net6.0
-
-
-
