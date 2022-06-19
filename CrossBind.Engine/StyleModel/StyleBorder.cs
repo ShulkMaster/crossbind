@@ -62,7 +62,7 @@ public class StyleBorder : ComponentStyle
             BorderRule? anyBorder = Borders[0];
             if (isHorizontal && isVertical)
             {
-                return $"{BorderKey} : {anyBorder?.AsBorder()};";
+                return $"{BorderKey}: {anyBorder?.AsBorder()};\n";
             }
 
             var sb = new StringBuilder();
@@ -70,7 +70,7 @@ public class StyleBorder : ComponentStyle
             {
                 if (Borders[i] is null) continue;
                 sb.Append(_borderKeys[i]);
-                sb.Append(" : ");
+                sb.Append(": ");
                 sb.Append(Borders[i]!.AsBorder());
                 sb.Append(";\n");
             }

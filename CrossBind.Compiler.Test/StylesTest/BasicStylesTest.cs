@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime;
+﻿using System.Text.RegularExpressions;
+using Antlr4.Runtime;
 using CrossBind.Compiler.Visitors.Component;
 using CrossBind.Engine.StyleModel;
 
@@ -62,6 +63,21 @@ public class BasicStylesTest
     }
     
     [Theory]
+    [InlineData("borderRadius : 0;", Px,0f)]
+    [InlineData("borderRadius: 250px;", Px, 250f)]
+    [InlineData("borderRadius:30em;\n\r", Em, 30f)]
+    [InlineData("borderRadius:   5rem;\n\r", Rem, 5f)]
+    [InlineData(" borderRadius:5.75em;\n\r", Em, 5.75f)]
+    [InlineData(" borderRadius:5.958rem;\n\r", Rem, 5.958f)]
+    public void Should_Parse_BorderRadius(string code, string unit, float rVal)
+    {
+        HaibtParser parser = BuildParser(code);
+        var visitor = new StyleVisitor();
+        ComponentStyle result = visitor.Visit(parser.css_statement());
+        Assert.Equal($"border-radius: {rVal}{unit};\n", result.StringValue);
+    }
+    
+    [Theory]
     [InlineData("margin : 0;", Px,0f)]
     [InlineData("margin:250  px   ;", Px, 250f)]
     [InlineData("margin:   5rem;\n\r", Rem, 5f)]
@@ -111,5 +127,21 @@ public class BasicStylesTest
         var visitor = new StyleVisitor();
         ComponentStyle result = visitor.Visit(parser.css_statement());
         Assert.Equal($"padding: {pVal}{unit};\n", result.StringValue);
+    }
+    
+    [Theory]
+    [InlineData("border: 10 solid #F00", Px, 10f, "#F00", "solid")]
+    [InlineData("border:250  em dashed#0FF   ;", Em, 250f, "#0FF", "dashed")]
+    [InlineData("border:5rem double;\n\r", Rem, 5f, "", "double")]
+    [InlineData("border: hidden #00F;\n\r", Px, 1f, "#00F", "hidden")]
+    [InlineData("border: dotted;\n\r", Px, 1f, "", "dotted")]
+    public void Should_Parse_Border_ShortHand(string code, string unit, float? bVal, string color, string style)
+    {
+        HaibtParser parser = BuildParser(code);
+        var visitor = new StyleVisitor();
+        Regex regex = new("\\s+");
+        string expected = regex.Replace($"border: {bVal}{unit} {style} {color}".Trim(), " ");
+        ComponentStyle result = visitor.Visit(parser.css_statement());
+        Assert.Equal($"{expected};\n", result.StringValue);
     }
 }

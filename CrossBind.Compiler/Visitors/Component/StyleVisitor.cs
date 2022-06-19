@@ -1,10 +1,12 @@
 ﻿using System.Text;
+using Antlr4.Runtime.Tree;
 using CrossBind.Engine.StyleModel;
 
 namespace CrossBind.Compiler.Visitors.Component;
 
 public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
 {
+    public const string BorderRadius = "border-radius";
 
     public override ComponentStyle VisitBgColor(HaibtParser.BgColorContext context)
     {
@@ -18,19 +20,25 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
 
     private static BorderRule VisitBorderRule(HaibtParser.BorderValueContext context)
     {
-        var stroke = context.cssMeasure();
-        string? strokeWidth = stroke.NUMBER()?.GetText();
+        HaibtParser.CssMeasureContext? stroke = context.cssMeasure();
+
+        string unit = "px";
         int width = 1;
-        if (!string.IsNullOrWhiteSpace(strokeWidth))
+        if (stroke is not null && stroke.ChildCount > 0)
         {
-            width = int.Parse(strokeWidth);
+            unit = stroke.CSS_UNIT()?.GetText() ?? unit;
+            string number = stroke.NUMBER().GetText();
+            if (int.TryParse(number, out int newWith))
+            {
+                width = newWith;
+            }
         }
-        
+
         return new BorderRule
         {
             Color = context.HEX_COLOR()?.GetText() ?? string.Empty,
             Stroke = width,
-            Unit = stroke.CSS_UNIT()?.GetText() ?? "px",
+            Unit = unit,
             BorderType = context.BORDER_STYLE().GetText(),
         };
     }
@@ -90,6 +98,16 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
         {
             Key = key,
             StringValue = $"{key}: {measure};\n",
+        };
+    }
+    
+    public override ComponentStyle VisitBorderRadius(HaibtParser.BorderRadiusContext context)
+    {
+        string measure = FromMeasure(context.cssMeasure());
+        return new ComponentStyle
+        {
+            Key = BorderRadius,
+            StringValue = $"{BorderRadius}: {measure};\n",
         };
     }
 
