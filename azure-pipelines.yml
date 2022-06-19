@@ -40,7 +40,7 @@ jobs:
       - task: JavaToolInstaller@0
         displayName: 'Installing Java JRE'
         inputs:
-          versionSpec: '8'
+          versionSpec: '11'
           jdkArchitectureOption: 'x64'
           jdkSourceOption: 'PreInstalled'
 
