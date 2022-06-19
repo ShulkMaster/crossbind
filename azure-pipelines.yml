@@ -66,13 +66,6 @@ jobs:
     displayName: 'Frontend Compiler Build Test'
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
     steps:
-      - task: Bash@3
-        inputs:
-          targetType: 'inline'
-          script: |
-            echo 'Hello world'
-            ls CrossBind.Engine/bin/$(Configuration)
-            ls CrossBind.Engine/bin/$(Configuration)/net6.0
       - task: DotNetCoreCLI@2
         displayName: 'Restoring CrossBind Engine'
         inputs:
