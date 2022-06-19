@@ -1,4 +1,5 @@
-﻿using CrossBind.Engine.StyleModel;
+﻿using System.Text;
+using CrossBind.Engine.StyleModel;
 
 namespace CrossBind.Compiler.Visitors.Component;
 
@@ -78,6 +79,52 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
         {
             Key = key,
             StringValue = $"{key}: {measure};\n",
+        };
+    }
+
+    public override ComponentStyle VisitHeight(HaibtParser.HeightContext context)
+    {
+        string key = context.Height().GetText();
+        string measure = FromMeasure(context.cssMeasure());
+        return new ComponentStyle
+        {
+            Key = key,
+            StringValue = $"{key}: {measure};\n",
+        };
+    }
+
+    private static void VisitClock(HaibtParser.ClockRuleContext ctx, StringBuilder sb)
+    {
+        foreach (HaibtParser.CssMeasureContext? rule in ctx.cssMeasure())
+        {
+            sb.Append(FromMeasure(rule));
+            sb.Append(' ');
+        }
+
+        sb.Remove(sb.Length - 1, 1);
+    }
+
+    public override ComponentStyle VisitMargin(HaibtParser.MarginContext context)
+    {
+        var sb = new StringBuilder("margin: ");
+        VisitClock(context.clockRule(), sb);
+        sb.Append(";\n");
+        return new ComponentStyle
+        {
+            Key = "margin",
+            StringValue = sb.ToString(),
+        };
+    }
+    
+    public override ComponentStyle VisitPadding(HaibtParser.PaddingContext context)
+    {
+        var sb = new StringBuilder("padding: ");
+        VisitClock(context.clockRule(), sb);
+        sb.Append(";\n");
+        return new ComponentStyle
+        {
+            Key = "padding",
+            StringValue = sb.ToString(),
         };
     }
 }

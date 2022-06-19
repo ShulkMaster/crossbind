@@ -6,6 +6,9 @@ namespace CrossBind.Compiler.Test.StylesTest;
 
 public class BasicStylesTest
 {
+    private const string Em = "em";
+    private const string Rem = "rem";
+    private const string Px = "px";
 
     private static HaibtParser BuildParser(string code)
     {
@@ -30,16 +33,83 @@ public class BasicStylesTest
     }
     
     [Theory]
-    [InlineData("width : 0;", "px",0f)]
-    [InlineData("width: 250px;", "px", 250f)]
-    [InlineData("width:30em;\n\r", "em", 30f)]
-    [InlineData("width:   5rem;\n\r", "rem", 5f)]
-    [InlineData(" width:5.75em;\n\r", "em", 5.75f)]
+    [InlineData("width : 0;", Px,0f)]
+    [InlineData("width: 250px;", Px, 250f)]
+    [InlineData("width:30em;\n\r", Em, 30f)]
+    [InlineData("width:   5rem;\n\r", Rem, 5f)]
+    [InlineData(" width:5.75em;\n\r", Em, 5.75f)]
     public void Should_Parse_Width(string code, string unit, float wVal)
     {
         HaibtParser parser = BuildParser(code);
         var visitor = new StyleVisitor();
         ComponentStyle result = visitor.Visit(parser.css_statement());
         Assert.Equal($"width: {wVal}{unit};\n", result.StringValue);
+    }
+    
+    [Theory]
+    [InlineData("height : 0;", Px,0f)]
+    [InlineData("height: 250px;", Px, 250f)]
+    [InlineData("height:30em;\n\r", Em, 30f)]
+    [InlineData("height:   5rem;\n\r", Rem, 5f)]
+    [InlineData(" height:5.75em;\n\r", Em, 5.75f)]
+    [InlineData(" height:5.958rem;\n\r", Rem, 5.958f)]
+    public void Should_Parse_Height(string code, string unit, float wVal)
+    {
+        HaibtParser parser = BuildParser(code);
+        var visitor = new StyleVisitor();
+        ComponentStyle result = visitor.Visit(parser.css_statement());
+        Assert.Equal($"height: {wVal}{unit};\n", result.StringValue);
+    }
+    
+    [Theory]
+    [InlineData("margin : 0;", Px,0f)]
+    [InlineData("margin:250  px   ;", Px, 250f)]
+    [InlineData("margin:   5rem;\n\r", Rem, 5f)]
+    [InlineData(" margin:5.958em;\n\r", Em, 5.958f)]
+    public void Should_Parse_Single_Margin(string code, string unit, float wVal)
+    {
+        HaibtParser parser = BuildParser(code);
+        var visitor = new StyleVisitor();
+        ComponentStyle result = visitor.Visit(parser.css_statement());
+        Assert.Equal($"margin: {wVal}{unit};\n", result.StringValue);
+    }
+    
+    
+    [Theory]
+    [InlineData("margin : 0 2em;", Px, 0f, Em, 2f)]
+    [InlineData("margin:250  px   4rem;", Px, 250f, Rem, 4f)]
+    [InlineData("margin:   5rem 15.1748;\n\r", Rem, 5f, Px, 15.1748f)]
+    [InlineData(" margin:5.958em 0em;\n\r", Em, 5.958f, Em, 0f)]
+    public void Should_Parse_Double_Margin(string code, string unit, float mVal, string unit2, float mVal2)
+    {
+        HaibtParser parser = BuildParser(code);
+        var visitor = new StyleVisitor();
+        ComponentStyle result = visitor.Visit(parser.css_statement());
+        Assert.Equal($"margin: {mVal}{unit} {mVal2}{unit2};\n", result.StringValue);
+    }
+    
+    [Theory]
+    [InlineData("margin : 2 2 2;", 2f, Px)]
+    [InlineData("margin : 0em 0em 0em;", 0f, Em)]
+    [InlineData("margin : 10rem 10rem 10rem;", 10f, Rem)]
+    public void Should_Parse_Triple_Margin(string code, float mVal, string unit)
+    {
+        HaibtParser parser = BuildParser(code);
+        var visitor = new StyleVisitor();
+        ComponentStyle result = visitor.Visit(parser.css_statement());
+        Assert.Equal($"margin: {mVal}{unit} {mVal}{unit} {mVal}{unit};\n", result.StringValue);
+    }
+    
+    [Theory]
+    [InlineData("padding : 0;", Px,0f)]
+    [InlineData("padding:250  px   ;", Px, 250f)]
+    [InlineData("padding:   5rem;\n\r", Rem, 5f)]
+    [InlineData(" padding:5.958em;\n\r", Em, 5.958f)]
+    public void Should_Parse_Single_Padding(string code, string unit, float pVal)
+    {
+        HaibtParser parser = BuildParser(code);
+        var visitor = new StyleVisitor();
+        ComponentStyle result = visitor.Visit(parser.css_statement());
+        Assert.Equal($"padding: {pVal}{unit};\n", result.StringValue);
     }
 }

@@ -17,7 +17,7 @@ public class UnitVisitor: HaibtBaseVisitor<UnitModel>
         var libs = context.libFile();
         var components = comps.Select(componentVisitor.VisitCompDeclaration);
         var models = new BindModel[comps.Length + libs.Length];
-        var index = 0;
+        int index = 0;
         foreach (var component in components)
         {
             models[index] = component;
