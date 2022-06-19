@@ -14,95 +14,90 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   Configuration: 'Release'
-  CEngine: 'CrossBind.Engine/CrossBind.Engine.csproj'
-  CEngineTest: 'CrossBind.Engine.Test/CrossBind.Engine.Test.csproj'
+  AntlrGen: '-visitor -listener -Dlanguage=CSharp -lib CrossBind.Compiler/Lang CrossBind.Compiler/Lang/Haibt.g4'
+  AntlrOut: '-o CrossBind.Compiler/Parser'
 
 jobs:
-  - job: PullRequest
-    displayName: 'Pull Request Build Test'
-    condition: eq(variables['Build.Reason'], 'PullRequest')
+  - job: FrontendCompilerBuild
+    displayName: 'Frontend Compiler Build'
     steps:
       - task: DotNetCoreCLI@2
         displayName: 'Restoring CrossBind Engine'
         inputs:
           command: 'restore'
           feedsToUse: 'select'
-          projects: 'CrossBind.Engine*/CrossBind.Engine*.csproj'
+          projects: '**/*.csproj'
           vstsFeed: 'c02610e3-ed5a-4422-8dfc-732f5bdef937'
+
+      - task: ExtractFiles@1
+        displayName: 'Extracting DocFx'
+        inputs:
+          archiveFilePatterns: 'Gen/*.zip'
+          destinationFolder: 'Gen'
+          cleanDestinationFolder: false
+          overwriteExistingFiles: false
+
+      - task: JavaToolInstaller@0
+        displayName: 'Installing Java JRE'
+        inputs:
+          versionSpec: '8'
+          jdkArchitectureOption: 'x64'
+          jdkSourceOption: 'PreInstalled'
+
+      - task: Bash@3
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo 'Building Antlr Source'
+            java -jar Gen/antlr.jar $(AntlrGen) $(AntlrOut)
+
       - task: DotNetCoreCLI@2
-        displayName: 'Compiling CrossBind Engine'
+        displayName: 'Compiling CrossBind Projects'
         inputs:
           command: 'build'
-          projects: $(CEngine)
-          arguments: '--no-restore -c $(Configuration) '
+          projects: '**/!(*Test.csproj)'
+          arguments: '--no-restore -c $(Configuration)'
+
       - task: DotNetCoreCLI@2
-        displayName: 'Compiling CrossBind Engine Test'
+        displayName: 'Compiling CrossBind Test Projects'
         inputs:
           command: 'build'
-          projects: $(CEngineTest)
+          projects: '**/*Test.csproj'
           arguments: '--no-restore --no-dependencies -c $(Configuration)'
+
       - task: DotNetCoreCLI@2
         name: 'TestingEngine'
-        displayName: 'Xunit: TestingEngine'
+        displayName: 'Xunit: Testing Engine'
         inputs:
           command: 'test'
-          projects: $(CEngineTest)
-          arguments: '--no-build --configuration $(Configuration)'
+          projects: '**/*Test.csproj'
+          arguments: '--configuration $(Configuration) --collect "Code coverage"'
+          nobuild: true
           testRunTitle: 'TestingEngine'
           publishTestResults: true
+
       - task: DotNetCoreCLI@2
         name: 'PackagingEngine'
         displayName: 'Packaging Engine Plugin Interface'
         inputs:
           command: 'pack'
-          packagesToPack: $(CEngine)
+          packagesToPack: 'CrossBind.Engine/CrossBind.Engine.csproj'
           configuration: '$(Configuration)'
           nobuild: true
           includesymbols: true
           includesource: true
           packDirectory: '$(Build.ArtifactStagingDirectory)/Engine'
           versioningScheme: 'off'
-  - job: FrontendCompiler
-    displayName: 'Frontend Compiler Build Test'
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
-    steps:
-      - task: DotNetCoreCLI@2
-        displayName: 'Restoring CrossBind Engine'
+
+      - task: Bash@3
         inputs:
-          command: 'restore'
-          feedsToUse: 'select'
-          projects: 'CrossBind.Engine*/CrossBind.Engine*.csproj'
-          vstsFeed: 'c02610e3-ed5a-4422-8dfc-732f5bdef937'
-      - task: DotNetCoreCLI@2
-        displayName: 'Compiling CrossBind Engine'
+          targetType: 'inline'
+          script: |
+            echo 'Building Docs Site'
+            Gen/docfx.exe Docs/docfx.json -o $(Build.ArtifactStagingDirectory)/docs
+         
+      - task: PublishBuildArtifacts@1
         inputs:
-          command: 'build'
-          projects: $(CEngine)
-          arguments: '--no-restore -c $(Configuration) '
-      - task: DotNetCoreCLI@2
-        displayName: 'Compiling CrossBind Engine Test'
-        inputs:
-          command: 'build'
-          projects: $(CEngineTest)
-          arguments: '--no-restore --no-dependencies -c $(Configuration)'
-      - task: DotNetCoreCLI@2
-        name: 'TestingEngine'
-        displayName: 'Xunit: TestingEngine'
-        inputs:
-          command: 'test'
-          projects: $(CEngineTest)
-          arguments: '--no-build --configuration $(Configuration)'
-          testRunTitle: 'TestingEngine'
-          publishTestResults: true
-      - task: DotNetCoreCLI@2
-        name: 'PackagingEngine'
-        displayName: 'Packaging Engine Plugin Interface'
-        inputs:
-          command: 'pack'
-          packagesToPack: $(CEngine)
-          configuration: '$(Configuration)'
-          nobuild: true
-          includesymbols: true
-          includesource: true
-          packDirectory: '$(Build.ArtifactStagingDirectory)/Engine'
-          versioningScheme: 'off'
+          PathtoPublish: $(Build.ArtifactStagingDirectory)
+          ArtifactName: 'artifacs'
+          publishLocation: 'Container'
