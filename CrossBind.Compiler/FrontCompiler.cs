@@ -10,30 +10,43 @@ public static class FrontCompiler
 {
     public static Result<UnitModel> CompileUnitFile(string filePath)
     {
-        var fileStream = File.OpenRead(filePath);
+        bool isPath = Path.IsPathRooted(filePath);
+
         var listener = new HaibtLexerErrorListener();
-        var unitVisitor = new UnitVisitor();
-        var charStream = new AntlrInputStream(fileStream);
+        var unitVisitor = new UnitVisitor()
+        {
+            FilePath = filePath,
+        };
+        IDisposable? disposable = null;
+        AntlrInputStream charStream;
+        if (isPath)
+        {
+            FileStream fileStream = File.OpenRead(filePath);
+            charStream = new AntlrInputStream(fileStream);
+            disposable = fileStream;
+        }
+        else
+        {
+            charStream = new AntlrInputStream(filePath);
+        }
+
         var lexer = new HaibtLexer(charStream);
         lexer.AddErrorListener(listener);
         var stream = new CommonTokenStream(lexer);
         var parse = new HaibtParser(stream);
         parse.AddErrorListener(new ErrorLister());
-        var parseTree = parse.translationUnit();
+        HaibtParser.TranslationUnitContext? parseTree = parse.translationUnit();
+        disposable?.Dispose();
         if (parse.NumberOfSyntaxErrors > 0 || listener.GetErrors().Any())
         {
-            Console.Out.WriteLine($"Se detectaros {parse.NumberOfSyntaxErrors} errores");
             foreach (string error in listener.GetErrors())
             {
                 Console.WriteLine(error);
             }
+
             return new Result<UnitModel>(new InvalidDataException());
         }
-
-        var gg = unitVisitor.VisitTranslationUnit(parseTree);
-        fileStream.Close();
-        fileStream.Dispose();
-
+        UnitModel gg = unitVisitor.VisitTranslationUnit(parseTree);
         return gg;
     }
 }

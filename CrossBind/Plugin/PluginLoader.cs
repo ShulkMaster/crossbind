@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using CrossBind.Compiler.exceptions;
 using CrossBind.Engine;
 
 namespace CrossBind.Plugin;
@@ -7,53 +6,49 @@ namespace CrossBind.Plugin;
 public class PluginLoader
 {
     private const string BasePath = "plugins";
-    private readonly PluginContext _context = new(BasePath);
+    private readonly PluginContext _context;
 
+    public PluginLoader()
+    {
+        string assemblyDir = Assembly.GetAssembly(typeof(PluginLoader))?.Location ?? "";
+        string info = new FileInfo(assemblyDir).DirectoryName ?? BasePath;
+        _context = new PluginContext(info);
+    }
+    
     private static IEnumerable<string> GetDllDirs()
     {
-        return Directory.EnumerateFiles(BasePath, "*.dll");
+        string assemblyDir = Assembly.GetAssembly(typeof(PluginLoader))?.Location ?? "";
+        string info = new FileInfo(assemblyDir).DirectoryName ?? "";
+        return Directory.EnumerateFiles(Path.Combine(info, BasePath), "*.dll");
     }
 
-    private static IEngine LoadEngine(Assembly assembly)
+    private static void LoadEngine(Assembly assembly, EngineTarget target, out IEngine? engine)
     {
-        Type? engineType = null;
-        foreach (var t in assembly.GetTypes())
-        {
-            if(t.Name.Contains("React"))
-            {
-                Console.WriteLine("This needs is " + typeof(IEngine).AssemblyQualifiedName);
-                foreach (var inter in t.GetInterfaces())
-                {
-                    Console.WriteLine("This shit is " + inter.AssemblyQualifiedName);
-                }
-            }
-            if (typeof(IEngine).IsAssignableFrom(t))
-            {
-                engineType = t;
-                break;
-            }
-        }
+        var engineType = assembly.GetTypes()
+            .FirstOrDefault(t => typeof(IEngine).IsAssignableFrom(t));
 
         if (engineType is null)
         {
-            string availableTypes = string.Join("\n", assembly.GetTypes().Select(t => t.FullName));
-            Console.WriteLine(availableTypes);
-            throw new InvalidAssemblyException(
-                $"Can't find any type which implements {nameof(IEngine)} in {assembly} from {assembly.Location}");
+            engine = null;
+            return;
         }
 
-        var result = Activator.CreateInstance(engineType) as IEngine;
-        return result!;
+        engine = Activator.CreateInstance(engineType) as IEngine;
+        if (engine?.Target == target)
+        {
+            return;
+        }
+
+        engine = null;
     }
 
     private Assembly LoadPlugin(string relativePath)
     {
         string absolute = Path.GetFullPath(relativePath);
-        Console.WriteLine($"Loading commands from: {absolute}");
         return _context.LoadFromAssemblyPath(absolute);
     }
 
-    public IEnumerable<IEngine> FindEnginesForTarget(EngineTarget target)
+    public List<IEngine> FindEnginesForTarget(EngineTarget target)
     {
         var list = new List<IEngine>();
         var dlls = GetDllDirs();
@@ -62,7 +57,12 @@ public class PluginLoader
             try
             {
                 var pluginAssembly = LoadPlugin(dll);
-                list.Add(LoadEngine(pluginAssembly));
+                LoadEngine(pluginAssembly, target, out var e);
+                if (e is not null)
+                {
+                    list.Add(e);
+                }
+
             }
             catch (Exception e)
             {

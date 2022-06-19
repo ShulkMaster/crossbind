@@ -20,6 +20,8 @@ Width: 'width';
 FontSize: 'fontSize';
 Cursor : 'cursor';
 Display: 'display';
+ZINDEX: 'zIndex';
+BORDER_RADIUS : 'borderRadius';
 
 WhiteSpaces: [\t\u000B\u000C\u0020\u00A0]+ -> channel(HIDDEN);
 LineTerminator: [\r\n\u2028\u2029] -> channel(HIDDEN);
@@ -34,6 +36,8 @@ SINGLEQ: '\'';
 STRING: SINGLEQ .*? SINGLEQ;
 Variant: 'variant';
 HEX_COLOR: '#' (HEX HEX HEX HEX HEX HEX| HEX HEX HEX);
+CSS_UNIT: 'px' | 'em' | 'rem';
+BORDER_STYLE: 'dotted' | 'dashed' | 'solid' | 'double' | 'none' | 'hidden';
 
 CANNON_COMP: 'button' | 'select' | 'textbox';
 // must be last to avoid overlapping
@@ -60,13 +64,25 @@ body:
 
 css_statement: 
       (BackgroundColor ':' HEX_COLOR SEMI) #bgColor
-    | ( Border ':' NUMBER IDENTIFIER SEMI) #inlineBorder
-    | ( Border ':' '{' .*? '}') #compoundBorder
+    |  Border ':' borderValue #inlineBorder
+    | ( Border ':' '{' borderValue borderValue? borderValue? borderValue? '}') #compoundBorder
+    | ZINDEX ':' NUMBER SEMI #zIndex
+    | BORDER_RADIUS ':' cssMeasure SEMI #borderRadius
+    | Margin ':' clockRule SEMI #margin
+    | Padding ':' clockRule SEMI #padding
+    | Width ':' cssMeasure SEMI #width
+    | Height ':' cssMeasure SEMI #height
     ;
+
+borderValue : cssMeasure? BORDER_STYLE HEX_COLOR? SEMI;
+
+clockRule : cssMeasure cssMeasure? cssMeasure? cssMeasure?;
+cssMeasure : NUMBER CSS_UNIT? ;
+    
     
 variant : 
-    Variant IDENTIFIER SEMI #VarianDeclaration
-    | Variant IDENTIFIER '{' variant_style* '}' #VariantInitialization
+    Variant IDENTIFIER SEMI #varianDeclaration
+    | Variant IDENTIFIER '{' variant_style* '}' #variantInitialization
     ;
     
 variant_style : IDENTIFIER '{' css_statement* '}';

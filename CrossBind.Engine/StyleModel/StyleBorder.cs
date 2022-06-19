@@ -1,4 +1,6 @@
-﻿namespace CrossBind.Engine.StyleModel;
+﻿using System.Text;
+
+namespace CrossBind.Engine.StyleModel;
 
 public enum StyleBorderType
 {
@@ -9,14 +11,23 @@ public enum StyleBorderType
 
 public record BorderRule
 {
+    private const string Solid = "solid";
+
     public int Stroke { get; init; } = 1;
-    public StyleBorderType BorderType { get; init; } = StyleBorderType.Solid;
+    public string BorderType { get; init; } = Solid;
     public string Color { get; init; } = string.Empty;
+    public string Unit { get; init; } = string.Empty;
+
+    public string AsBorder()
+    {
+        return $"{Stroke}{Unit} {BorderType} {Color}".Trim();
+    }
 }
 
 public class StyleBorder : ComponentStyle
 {
-    private readonly string _stringValue;
+    private readonly string _stringValue = string.Empty;
+    private readonly string[] _borderKeys = { "border-top", "border-right", "border-left", "border-bottom" };
 
     #region Constants
 
@@ -24,65 +35,48 @@ public class StyleBorder : ComponentStyle
     private const int Right = 1;
     private const int Bottom = 2;
     private const int Left = 3;
-    public const string BorderKey = "border";
 
     #endregion
 
-    public BorderRule?[] GetBorder { get; } = { null, null, null, null };
+    public const string BorderKey = "border";
+    public BorderRule?[] Borders { get; }
+
+    public StyleBorder(BorderRule[] borders)
+    {
+        Borders = borders;
+    }
+
+    public StyleBorder(BorderRule border)
+    {
+        Borders = new[] { border, border,border,border };
+    }
+
+
 
     public override string StringValue
     {
         get
         {
-            var isHorizontal = GetBorder[Left] == GetBorder[Right];
-            var isVertical = GetBorder[Left] == GetBorder[Right];
-            var anyBorder = GetBorder[0];
+            bool isHorizontal = Borders[Left] == Borders[Right];
+            bool isVertical = Borders[Left] == Borders[Right];
+            BorderRule? anyBorder = Borders[0];
             if (isHorizontal && isVertical)
             {
-                return $"{BorderKey} : {anyBorder?.Stroke}px {anyBorder?.Color} {anyBorder?.BorderType.ToString().ToLower()}";
+                return $"{BorderKey}: {anyBorder?.AsBorder()};\n";
             }
-            
-            return "";
+
+            var sb = new StringBuilder();
+            for (int i = 0; i < Borders.Length; i++)
+            {
+                if (Borders[i] is null) continue;
+                sb.Append(_borderKeys[i]);
+                sb.Append(": ");
+                sb.Append(Borders[i]!.AsBorder());
+                sb.Append(";\n");
+            }
+
+            return sb.ToString();
         }
         init => _stringValue = value;
     }
-
-    public void SetTop(BorderRule topBorder)
-    {
-        GetBorder[Top] = topBorder;
-    }
-    
-    public void SetBottom(BorderRule bottomBorder)
-    {
-        GetBorder[Bottom] = bottomBorder;
-    }
-    
-    public void SetLeft(BorderRule leftBorder)
-    {
-        GetBorder[Left] = leftBorder;
-    }
-    
-    public void SetRight(BorderRule rightBorder)
-    {
-        GetBorder[Right] = rightBorder;
-    }
-    
-    public void SetVertical(BorderRule border)
-    {
-        SetTop(border);
-        SetBottom(border);
-    }
-    
-    public void SetHorizontal(BorderRule border)
-    {
-        SetLeft(border);
-        SetRight(border);
-    }
-    
-    public void SetBorder(BorderRule border)
-    {
-        SetVertical(border);
-        SetHorizontal(border);
-    }
-
 }
