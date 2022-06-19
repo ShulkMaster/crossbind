@@ -49,12 +49,12 @@ jobs:
           jdkSourceOption: 'PreInstalled'
 
       - task: Bash@3
+        displayName: 'Generating Antr parse Class'
         inputs:
           targetType: 'inline'
           script: |
             java -jar Gen/antlr.jar $(AntlrGen) $(AntlrOut)
-            echo 'Antlr Source Build'
-            ls CrossBind.Compiler/Parser
+            ls ./CrossBind.Compiler/Parser/
             
 
       - task: DotNetCoreCLI@2
@@ -112,7 +112,7 @@ jobs:
         displayName: 'Packaging Engine Plugin Interface'
         inputs:
           command: 'pack'
-          packagesToPack:  $(CEngine)
+          packagesToPack: $(CEngine)
           configuration: $(Configuration)
           nobuild: true
           includesymbols: true
@@ -121,10 +121,12 @@ jobs:
           versioningScheme: 'off'
 
       - task: Bash@3
+        displayName: 'DocFx site generation'
         inputs:
           targetType: 'inline'
           script: |
             echo 'Building Docs Site'
+            chmod +x Gen/docfx.exe
             Gen/docfx.exe Docs/docfx.json -o $(Build.ArtifactStagingDirectory)/docs
          
       - task: PublishBuildArtifacts@1
