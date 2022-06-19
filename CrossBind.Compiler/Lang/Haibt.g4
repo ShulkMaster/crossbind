@@ -74,7 +74,7 @@ css_statement:
     | Height ':' cssMeasure SEMI #height
     ;
 
-borderValue : cssMeasure HEX_COLOR SEMI;
+borderValue : cssMeasure? BORDER_STYLE HEX_COLOR? SEMI;
 
 clockRule : cssMeasure cssMeasure? cssMeasure? cssMeasure?;
 cssMeasure : NUMBER CSS_UNIT? ;
