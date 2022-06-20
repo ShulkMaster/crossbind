@@ -47,7 +47,7 @@ jobs:
           jdkArchitectureOption: 'x64'
           jdkSourceOption: 'PreInstalled'
 
-      - task: Bash@3
+      - task: PowerShell@2
         displayName: 'Generating Antr parse Class'
         inputs:
           targetType: 'inline'
@@ -55,7 +55,6 @@ jobs:
             java -jar Gen/antlr.jar $(AntlrGen) $(AntlrOut)
             ls CrossBind.Compiler/Parser
             
-
       - task: DotNetCoreCLI@2
         displayName: 'Compiling CrossBind Engine Projects'
         inputs:
@@ -97,15 +96,15 @@ jobs:
         displayName: 'Packaging Engine Plugin Interface'
         inputs:
           command: 'pack'
-          packagesToPack: $(CEngine)
-          configuration: $(Configuration)
+          packagesToPack: '$(CEngine)'
+          configuration: '$(Configuration)'
+          packDirectory: '$(Build.ArtifactStagingDirectory)\Engine'
           nobuild: true
           includesymbols: true
           includesource: true
-          packDirectory: '--no-restore $(Build.ArtifactStagingDirectory)\Engine'
           versioningScheme: 'off'
 
-      - task: Bash@3
+      - task: PowerShell@2
         displayName: 'DocFx site generation'
         inputs:
           targetType: 'inline'
