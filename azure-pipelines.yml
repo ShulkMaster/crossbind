@@ -41,12 +41,12 @@ jobs:
           overwriteExistingFiles: false
           
       - task: ExtractFiles@1
-          displayName: 'Extracting DocFx Template'
-          inputs:
-            archiveFilePatterns: 'Gen/singulinkfx.zip'
-            destinationFolder: 'Gen'
-            cleanDestinationFolder: false
-            overwriteExistingFiles: false
+        displayName: 'Extracting DocFx Template'
+        inputs:
+          archiveFilePatterns: 'Gen/singulinkfx.zip'
+          destinationFolder: 'Gen'
+          cleanDestinationFolder: false
+          overwriteExistingFiles: false
 
       - task: JavaToolInstaller@0
         displayName: 'Installing Java JRE'
