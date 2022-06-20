@@ -100,14 +100,14 @@ jobs:
           publishTestResults: false
           
       - task: PublishTestResults@2
-          displayName: 'Upload Coverage'
-          inputs:
-            testResultsFormat: 'XUnit'
-            testResultsFiles: 'coverage/*.html'
-            mergeTestResults: true
-            testRunTitle: 'TestingEngine'
-            buildConfiguration: $(Configuration)
-            publishTestResults: true
+        displayName: 'Upload Coverage'
+        inputs:
+          testResultsFormat: 'XUnit'
+          testResultsFiles: 'coverage/*.html'
+          mergeTestResults: true
+          testRunTitle: 'TestingEngine'
+          buildConfiguration: $(Configuration)
+          publishTestResults: true
 
       - task: DotNetCoreCLI@2
         name: 'PackagingEngine'
