@@ -70,8 +70,14 @@ jobs:
           command: 'build'
           projects: |
             $(Compiler)
-            $(CompilerTest)
             $(CEngineTest)
+          arguments: '--no-restore --no-dependencies -c $(Configuration)'
+      
+      - task: DotNetCoreCLI@2
+        displayName: 'Compiling CrossBind Projects'
+        inputs:
+          command: 'build'
+          projects: $(CompilerTest)
           arguments: '--no-restore --no-dependencies -c $(Configuration)'
 
       - task: DotNetCoreCLI@2
