@@ -88,10 +88,10 @@ jobs:
           projects: |
             $(CEngineTest)
             $(CompilerTest)
-          arguments: '--configuration $(Configuration) --collect "Code coverage" --results-directory coverage'
+          arguments: '--configuration $(Configuration) --collect "Code coverage" --logger trx --results-directory coverage'
           nobuild: true
           testRunTitle: 'TestingEngine'
-          publishTestResults: true
+          publishTestResults: false
 
       - task: PublishTestResults@2
         displayName: 'Upload Coverage'
