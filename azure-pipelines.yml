@@ -69,8 +69,8 @@ jobs:
         inputs:
           command: 'build'
           projects: |
-            $(CompilerTest)
             $(Compiler)
+            $(CompilerTest)
             $(CEngineTest)
           arguments: '--no-restore --no-dependencies -c $(Configuration)'
 
