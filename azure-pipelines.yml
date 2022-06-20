@@ -58,7 +58,7 @@ jobs:
             
 
       - task: DotNetCoreCLI@2
-        displayName: 'Compiling CrossBind Engine'
+        displayName: 'Compiling CrossBind Projects'
         inputs:
           command: 'build'
           projects: $(CEngine)
@@ -68,21 +68,10 @@ jobs:
         displayName: 'Compiling CrossBind Engine Test'
         inputs:
           command: 'build'
-          projects: $(CEngineTest)
-          arguments: '--no-restore --no-dependencies -c $(Configuration)'
-      
-      - task: DotNetCoreCLI@2
-        displayName: 'Compiling CrossBind Compiler'
-        inputs:
-          command: 'build'
-          projects: $(Compiler)
-          arguments: '--no-restore --no-dependencies -c $(Configuration)'
-
-      - task: DotNetCoreCLI@2
-        displayName: 'Compiling CrossBind Compiler Test'
-        inputs:
-          command: 'build'
-          projects: $(CompilerTest)
+          projects: |
+            $(CEngineTest)
+            $(Compiler)
+            $(CompilerTest)
           arguments: '--no-restore --no-dependencies -c $(Configuration)'
 
       - task: DotNetCoreCLI@2
@@ -90,22 +79,23 @@ jobs:
         displayName: 'Xunit: Testing Engine'
         inputs:
           command: 'test'
-          projects: $(CEngineTest)
+          projects: |
+            $(CEngineTest)
+            $(CompilerTest)
           arguments: '--configuration $(Configuration) --collect "Code coverage"'
           nobuild: true
           testRunTitle: 'TestingEngine'
           publishTestResults: true
 
-      - task: DotNetCoreCLI@2
-        name: 'TestingCompiler'
-        displayName: 'Xunit: Testing Compiler'
+      - task: PublishTestResults@2
+        displayName: 'Upload Coverage'
         inputs:
-          command: 'test'
-          projects: $(CompilerTest)
-          arguments: '--configuration $(Configuration) --collect "Code coverage"'
-          nobuild: true
+          testResultsFormat: 'XUnit'
+          testResultsFiles: '**/TEST-*.xml'
+          mergeTestResults: true
           testRunTitle: 'TestingEngine'
-          publishTestResults: true
+          buildConfiguration: $(Configuration)
+          nobuild: true
 
       - task: DotNetCoreCLI@2
         name: 'PackagingEngine'
@@ -117,7 +107,7 @@ jobs:
           nobuild: true
           includesymbols: true
           includesource: true
-          packDirectory: '$(Build.ArtifactStagingDirectory)/Engine'
+          packDirectory: '--no-restore $(Build.ArtifactStagingDirectory)/Engine'
           versioningScheme: 'off'
 
       - task: Bash@3
