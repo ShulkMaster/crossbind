@@ -11,12 +11,16 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrossBind.Lang", "CrossBind.Lang\CrossBind.Lang.csproj", "{BC3DF6A2-29F6-472B-BD63-25E45517BCF0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrossBind", "CrossBind\CrossBind.csproj", "{00C48C5D-EBF1-48DF-84A6-2A0935046954}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DB765E66-80C8-4657-8F89-EC3AE408EC3D} = {DB765E66-80C8-4657-8F89-EC3AE408EC3D}
+		{EDC06E9E-A008-488B-B3E7-6F76834DEB80} = {EDC06E9E-A008-488B-B3E7-6F76834DEB80}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrossBind.Compiler.Test", "CrossBind.Compiler.Test\CrossBind.Compiler.Test.csproj", "{7F357D12-F0DD-483B-BED1-850E6F319573}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossBind.Engine.Test", "CrossBind.Engine.Test\CrossBind.Engine.Test.csproj", "{2F0C1C88-D40D-4E8F-B68C-9840CFC0D288}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine.Vue", "Engine.Vue\Engine.Vue.csproj", "{DB765E66-80C8-4657-8F89-EC3AE408EC3D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrossBind.Engine.Test", "CrossBind.Engine.Test\CrossBind.Engine.Test.csproj", "{2F0C1C88-D40D-4E8F-B68C-9840CFC0D288}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +52,10 @@ Global
 		{7F357D12-F0DD-483B-BED1-850E6F319573}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F357D12-F0DD-483B-BED1-850E6F319573}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F357D12-F0DD-483B-BED1-850E6F319573}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB765E66-80C8-4657-8F89-EC3AE408EC3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB765E66-80C8-4657-8F89-EC3AE408EC3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB765E66-80C8-4657-8F89-EC3AE408EC3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB765E66-80C8-4657-8F89-EC3AE408EC3D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2F0C1C88-D40D-4E8F-B68C-9840CFC0D288}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2F0C1C88-D40D-4E8F-B68C-9840CFC0D288}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F0C1C88-D40D-4E8F-B68C-9840CFC0D288}.Release|Any CPU.ActiveCfg = Release|Any CPU
