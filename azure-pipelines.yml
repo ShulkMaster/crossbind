@@ -88,7 +88,7 @@ jobs:
           projects: |
             $(CEngineTest)
             $(CompilerTest)
-          arguments: '--configuration $(Configuration) --collect "Code coverage"'
+          arguments: '--configuration $(Configuration) --collect "Code coverage" --results-directory coverage'
           nobuild: true
           testRunTitle: 'TestingEngine'
           publishTestResults: true
@@ -97,11 +97,10 @@ jobs:
         displayName: 'Upload Coverage'
         inputs:
           testResultsFormat: 'XUnit'
-          testResultsFiles: '**/TEST-*.xml'
+          testResultsFiles: 'coverage/*.trx'
           mergeTestResults: true
           testRunTitle: 'TestingEngine'
           buildConfiguration: $(Configuration)
-          nobuild: true
 
       - task: DotNetCoreCLI@2
         name: 'PackagingEngine'
