@@ -86,7 +86,7 @@ jobs:
           projects: |
             $(CEngineTest)
             $(CompilerTest)
-          arguments: '--configuration $(Configuration) --collect "Code coverage"'
+          arguments: '--configuration $(Configuration) --collect:"XPlat Code Coverage"'
           nobuild: true
           testRunTitle: 'TestingEngine'
           publishTestResults: true
