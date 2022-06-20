@@ -8,13 +8,13 @@ trigger:
   - develop
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'
 
 variables:
   buildPlatform: 'Any CPU'
   Configuration: 'Release'
   AntlrGen: '-visitor -listener -Dlanguage=CSharp -lib CrossBind.Compiler/Lang CrossBind.Compiler/Lang/Haibt.g4'
-  AntlrOut: '-o CrossBind.Compiler\Parser'
+  AntlrOut: '-o CrossBind.Compiler/Parser'
   CEngine: 'CrossBind.Engine\CrossBind.Engine.csproj'
   CEngineTest: 'CrossBind.Engine.Test\CrossBind.Engine.Test.csproj'
   Compiler: 'CrossBind.Compiler\CrossBind.Compiler.csproj'
@@ -52,8 +52,8 @@ jobs:
         inputs:
           targetType: 'inline'
           script: |
-            java -jar Gen\antlr.jar $(AntlrGen) $(AntlrOut)
-            ls .\CrossBind.Compiler\Parser
+            java -jar Gen/antlr.jar $(AntlrGen) $(AntlrOut)
+            ls CrossBind.Compiler/Parser
             
 
       - task: DotNetCoreCLI@2
