@@ -58,20 +58,20 @@ jobs:
             
 
       - task: DotNetCoreCLI@2
-        displayName: 'Compiling CrossBind Projects'
+        displayName: 'Compiling CrossBind Engine Projects'
         inputs:
           command: 'build'
           projects: $(CEngine)
           arguments: '--no-restore -c $(Configuration)'
 
       - task: DotNetCoreCLI@2
-        displayName: 'Compiling CrossBind Engine Test'
+        displayName: 'Compiling CrossBind Projects'
         inputs:
           command: 'build'
           projects: |
-            $(CEngineTest)
-            $(Compiler)
             $(CompilerTest)
+            $(Compiler)
+            $(CEngineTest)
           arguments: '--no-restore --no-dependencies -c $(Configuration)'
 
       - task: DotNetCoreCLI@2
