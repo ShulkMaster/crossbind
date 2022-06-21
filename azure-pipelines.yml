@@ -107,11 +107,11 @@ jobs:
           mergeTestResults: true
           testRunTitle: 'TestingEngine'
           buildConfiguration: $(Configuration)
-          publishTestResults: true
 
       - task: PowerShell@2
         name: 'MovingEngine'
         displayName: 'Moving Engine to StagingDir'
+        inputs:
           targetType: 'inline'
           script: |
             Move-Item -Path .\CrossBind.Engine\bin\$(Configuration)\*.nupkg -Destination $(Build.ArtifactStagingDirectory)\Engine
