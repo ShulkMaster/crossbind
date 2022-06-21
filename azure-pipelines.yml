@@ -13,7 +13,8 @@ pool:
 variables:
   major: 0
   minor: 1
-  buildPlatform: 'Any CPU'
+  patch: 0
+  prefix: $(major).$(minor).$(patch)
   Configuration: 'Release'
   win: 'win-x64'
   linux: 'linux-x64'
@@ -30,6 +31,14 @@ variables:
 jobs:
   - job: FrontendCompilerBuild
     displayName: 'Frontend Compiler Build'
+    variables:
+      buildRun: $[counter(variables['prefix'], 0)]
+      buildFlags: '--no-restore --no-dependencies -c $(Configuration)'
+      publishFlags: '--no-build --no-dependencies -c $(Configuration)'
+      ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+        versionFlag: '-p:VersionPrefix=$(prefix) -p:AssemblyVersion=$(prefix) --version-suffix dev.$(buildRun)'
+      ${{ else }}:
+        versionFlag: '-p:VersionPrefix=$(prefix) -p:AssemblyVersion=$(prefix)'
     steps:
       - task: DotNetCoreCLI@2
         displayName: 'Restoring CrossBind Engine'
@@ -38,7 +47,7 @@ jobs:
           feedsToUse: 'select'
           projects: '**/*.csproj'
           vstsFeed: 'c02610e3-ed5a-4422-8dfc-732f5bdef937'
-      
+
       - task: ExtractFiles@1
         displayName: 'Extracting DocFx'
         inputs:
@@ -75,14 +84,14 @@ jobs:
         inputs:
           command: 'build'
           projects: $(CEngine)
-          arguments: '--no-restore -c $(Configuration)'
+          arguments: '--no-restore -c $(Configuration) $(versionFlag)'
 
       - task: DotNetCoreCLI@2
         displayName: 'Compile Front Compiler'
         inputs:
           command: 'build'
           projects: $(Compiler)
-          arguments: '--no-restore --no-dependencies -c $(Configuration)'
+          arguments: $(buildFlags)
 
       - task: DotNetCoreCLI@2
         displayName: 'Compile CLI & LSP Windows'
@@ -91,7 +100,7 @@ jobs:
           projects: |
             $(Cli)
             $(Lang)
-          arguments: '--no-restore --no-dependencies -c $(Configuration) -r $(win)'
+          arguments: '-r $(win) $(buildFlags) $(versionFlag)'
 
       - task: DotNetCoreCLI@2
         displayName: 'Compile CLI & LSP Linux'
@@ -100,7 +109,7 @@ jobs:
           projects: |
             $(Cli)
             $(Lang)
-          arguments: '--no-restore --no-dependencies -c $(Configuration) -r $(linux)'
+          arguments: '-r $(linux) $(buildFlags) $(versionFlag)'
 
       - task: DotNetCoreCLI@2
         displayName: 'Compiling Test'
@@ -109,7 +118,7 @@ jobs:
           projects: |
             $(CEngineTest)
             $(CompilerTest)
-          arguments: '--no-restore --no-dependencies -c $(Configuration)'
+          arguments: $(buildFlags)
 
       - task: DotNetCoreCLI@2
         name: 'TestingEngine'
@@ -141,7 +150,7 @@ jobs:
           projects: |
             $(Cli)
             $(Lang)
-          arguments: '--no-build --no-dependencies -c $(Configuration) -r $(win) -o $(Build.ArtifactStagingDirectory)\bin'
+          arguments: '-r $(win) $(publishFlags) -o $(Build.ArtifactStagingDirectory)\bin'
           zipAfterPublish: false
           modifyOutputPath: false
 
@@ -153,7 +162,7 @@ jobs:
           projects: |
             $(Cli)
             $(Lang)
-          arguments: '--no-build --no-dependencies -c $(Configuration) -r $(linux) -o $(Build.ArtifactStagingDirectory)\bin'
+          arguments: '-r $(linux) $(publishFlags) -o $(Build.ArtifactStagingDirectory)\bin'
           zipAfterPublish: false
           modifyOutputPath: false
 

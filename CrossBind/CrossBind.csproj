@@ -5,10 +5,10 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyVersion>1.0.0</AssemblyVersion>
         <PlatformTarget>AnyCPU</PlatformTarget>
         <PublishSingleFile>true</PublishSingleFile>
-        <SelfContained>true</SelfContained>
+        <SelfContained>false</SelfContained>
+        <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
