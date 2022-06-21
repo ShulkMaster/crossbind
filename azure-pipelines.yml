@@ -13,12 +13,17 @@ pool:
 variables:
   buildPlatform: 'Any CPU'
   Configuration: 'Release'
+  win: 'win-x64'
+  linux: 'linux-x64'
   AntlrGen: '-visitor -listener -Dlanguage=CSharp -lib CrossBind.Compiler/Lang CrossBind.Compiler/Lang/Haibt.g4'
   AntlrOut: '-o CrossBind.Compiler/Parser'
   CEngine: 'CrossBind.Engine\CrossBind.Engine.csproj'
   CEngineTest: 'CrossBind.Engine.Test\CrossBind.Engine.Test.csproj'
   Compiler: 'CrossBind.Compiler\CrossBind.Compiler.csproj'
   CompilerTest: 'CrossBind.Compiler.Test\CrossBind.Compiler.Test.csproj'
+  Cli: 'CrossBind\CrossBind.csproj'
+  Lang: 'CrossBind.Lang\CrossBind.Lang.csproj'
+  React: 'Engine.React\Engine.React.csproj'
 
 jobs:
   - job: FrontendCompilerBuild
@@ -39,7 +44,7 @@ jobs:
           destinationFolder: 'Gen/docfx'
           cleanDestinationFolder: false
           overwriteExistingFiles: false
-          
+
       - task: ExtractFiles@1
         displayName: 'Extracting DocFx Template'
         inputs:
@@ -62,28 +67,46 @@ jobs:
           script: |
             java -jar Gen/antlr.jar $(AntlrGen) $(AntlrOut)
             ls CrossBind.Compiler/Parser
-            
+
       - task: DotNetCoreCLI@2
-        displayName: 'Compiling CrossBind Engine Projects'
+        displayName: 'Compile Plugin Interface'
         inputs:
           command: 'build'
           projects: $(CEngine)
           arguments: '--no-restore -c $(Configuration)'
 
       - task: DotNetCoreCLI@2
-        displayName: 'Compiling CrossBind Projects'
+        displayName: 'Compile Front Compiler'
+        inputs:
+          command: 'build'
+          projects: $(Compiler)
+          arguments: '--no-restore --no-dependencies -c $(Configuration)'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'Compile CLI & LSP Windows'
         inputs:
           command: 'build'
           projects: |
-            $(Compiler)
-            $(CEngineTest)
-          arguments: '--no-restore --no-dependencies -c $(Configuration)'
-      
+            $(Cli)
+            $(Lang)
+          arguments: '--no-restore --no-dependencies -c $(Configuration) -r $(win)'
+
       - task: DotNetCoreCLI@2
-        displayName: 'Compiling CrossBind Projects'
+        displayName: 'Compile CLI & LSP Linux'
         inputs:
           command: 'build'
-          projects: $(CompilerTest)
+          projects: |
+            $(Cli)
+            $(Lang)
+          arguments: '--no-restore --no-dependencies -c $(Configuration) -r $(linux)'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'Compiling Test'
+        inputs:
+          command: 'build'
+          projects: |
+            $(CEngineTest)
+            $(CompilerTest)
           arguments: '--no-restore --no-dependencies -c $(Configuration)'
 
       - task: DotNetCoreCLI@2
@@ -94,19 +117,9 @@ jobs:
           projects: |
             $(CEngineTest)
             $(CompilerTest)
-          arguments: '--configuration $(Configuration) --collect:"Code Coverage" --logger html --results-directory coverage'
-          nobuild: true
+          arguments: '--no-build --no-dependencies -c $(Configuration) --collect:"Code Coverage"'
           testRunTitle: 'TestingEngine'
-          publishTestResults: false
-          
-      - task: PublishTestResults@2
-        displayName: 'Upload Coverage'
-        inputs:
-          testResultsFormat: 'XUnit'
-          testResultsFiles: 'coverage/*.html'
-          mergeTestResults: true
-          testRunTitle: 'TestingEngine'
-          buildConfiguration: $(Configuration)
+          publishTestResults: true
 
       - task: PowerShell@2
         name: 'MovingEngine'
@@ -116,6 +129,31 @@ jobs:
           script: |
             Move-Item -Path .\CrossBind.Engine\bin\$(Configuration)\*.nupkg -Destination $(Build.ArtifactStagingDirectory)\Engine
             ls .\CrossBind.Engine\bin\$(Configuration)\net6.0
+            ls .\Docs\api
+
+      - task: DotNetCoreCLI@2
+        displayName: 'Publish CLI & LSP Windows'
+        inputs:
+          command: 'publish'
+          publishWebProjects: false
+          projects: |
+            $(Cli)
+            $(Lang)
+          arguments: '--no-build --no-dependencies -c $(Configuration) -r $(win) -o $(Build.ArtifactStagingDirectory)\bin'
+          zipAfterPublish: false
+          modifyOutputPath: false
+
+      - task: DotNetCoreCLI@2
+        displayName: 'Publish CLI & LSP Linux'
+        inputs:
+          command: 'publish'
+          publishWebProjects: false
+          projects: |
+            $(Cli)
+            $(Lang)
+          arguments: '--no-build --no-dependencies -c $(Configuration) -r $(linux) -o $(Build.ArtifactStagingDirectory)\bin'
+          zipAfterPublish: false
+          modifyOutputPath: false
 
       - task: PowerShell@2
         displayName: 'DocFx site generation'
@@ -124,7 +162,7 @@ jobs:
           script: |
             echo 'Building Docs Site'
             Gen\docfx\docfx.exe Docs\docfx.json -o $(Build.ArtifactStagingDirectory)\docs
-         
+
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: $(Build.ArtifactStagingDirectory)
