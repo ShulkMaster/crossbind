@@ -112,7 +112,7 @@ jobs:
       - task: PowerShell@2
         name: 'MovingEngine'
         displayName: 'Moving Engine to StagingDir'
-        targetType: 'inline'
+          targetType: 'inline'
           script: |
             Move-Item -Path .\CrossBind.Engine\bin\$(Configuration)\*.nupkg -Destination $(Build.ArtifactStagingDirectory)\Engine
 
