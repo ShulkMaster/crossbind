@@ -115,6 +115,7 @@ jobs:
           targetType: 'inline'
           script: |
             Move-Item -Path .\CrossBind.Engine\bin\$(Configuration)\*.nupkg -Destination $(Build.ArtifactStagingDirectory)\Engine
+            ls .\CrossBind.Engine\bin\$(Configuration)\net6.0
 
       - task: PowerShell@2
         displayName: 'DocFx site generation'
