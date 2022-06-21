@@ -36,6 +36,15 @@ jobs:
           feedsToUse: 'select'
           projects: '**/*.csproj'
           vstsFeed: 'c02610e3-ed5a-4422-8dfc-732f5bdef937'
+      
+      - task: ExtractFiles@1
+        displayName: 'Extracting DocFx'
+        inputs:
+          archiveFilePatterns: 'Gen/docfx.zip'
+          destinationFolder: 'Gen/docfx'
+          cleanDestinationFolder: false
+          overwriteExistingFiles: false
+
       - task: ExtractFiles@1
         displayName: 'Extracting DocFx Template'
         inputs:
@@ -146,18 +155,14 @@ jobs:
           zipAfterPublish: false
           modifyOutputPath: false
 
-      - task: DocFxTask@0
-        displayName: 'DocFx site generation'
-        inputs:
-          solution: 'Docs/docfx.json'
-          docfxOptions: '-o $(Build.ArtifactStagingDirectory)\docs'
-
       - task: PowerShell@2
         inputs:
           targetType: 'inline'
           script: |
             echo 'Building Docs Site'
+            .\Gen\docfx\docfx.exe metadata .\Docs\docfx.json
             ls .\Docs\api
+            .\Gen\docfx\docfx.exe build .\Docs\docfx.json -o $(Build.ArtifactStagingDirectory)\docs
 
       - task: PublishBuildArtifacts@1
         inputs:
