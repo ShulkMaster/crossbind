@@ -127,7 +127,7 @@ jobs:
         inputs:
           targetType: 'inline'
           script: |
-            Move-Item -Path .\CrossBind.Engine\bin\$(Configuration)\*.nupkg -Destination $(Build.ArtifactStagingDirectory)\Engine
+            Move-Item -Path .\CrossBind.Engine\bin\$(Configuration)\*.nupkg -Destination $(Build.ArtifactStagingDirectory)\Engine\
             ls .\CrossBind.Engine\bin\$(Configuration)\net6.0
             ls .\Docs\api
 
