@@ -5,14 +5,22 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <AssemblyVersion>1.0.0</AssemblyVersion>
+        <PublishSingleFile>true</PublishSingleFile>
+        <SelfContained>true</SelfContained>
+        <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
         <OutDir>..\..\hbt\server</OutDir>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <PlatformTarget>x64</PlatformTarget>
+    </PropertyGroup>
+    
     <ItemGroup>
-      <PackageReference Include="OmniSharp.Extensions.LanguageServer" Version="0.19.5" />
-      <PackageReference Include="Serilog" Version="2.11.0" />
-      <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
-      <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+        <PackageReference Include="OmniSharp.Extensions.LanguageServer" Version="0.19.5"/>
+        <PackageReference Include="Serilog" Version="2.11.0"/>
+        <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0"/>
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.0"/>
     </ItemGroup>
 
 </Project>
