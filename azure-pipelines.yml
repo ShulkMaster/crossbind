@@ -109,18 +109,12 @@ jobs:
           buildConfiguration: $(Configuration)
           publishTestResults: true
 
-      - task: DotNetCoreCLI@2
-        name: 'PackagingEngine'
-        displayName: 'Packaging Engine Plugin Interface'
-        inputs:
-          command: 'pack'
-          packagesToPack: '$(CEngine)'
-          configuration: '$(Configuration)'
-          packDirectory: '$(Build.ArtifactStagingDirectory)\Engine'
-          nobuild: true
-          includesymbols: true
-          includesource: true
-          versioningScheme: 'off'
+      - task: PowerShell@2
+        name: 'MovingEngine'
+        displayName: 'Moving Engine to StagingDir'
+        targetType: 'inline'
+          script: |
+            Move-Item -Path .\CrossBind.Engine\bin\$(Configuration)\*.nupkg -Destination $(Build.ArtifactStagingDirectory)\Engine
 
       - task: PowerShell@2
         displayName: 'DocFx site generation'
@@ -128,7 +122,7 @@ jobs:
           targetType: 'inline'
           script: |
             echo 'Building Docs Site'
-            Gen\docfx.exe Docs\docfx.json -o $(Build.ArtifactStagingDirectory)\docs
+            Gen\docfx\docfx.exe Docs\docfx.json -o $(Build.ArtifactStagingDirectory)\docs
          
       - task: PublishBuildArtifacts@1
         inputs:
