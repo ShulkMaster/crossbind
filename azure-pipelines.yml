@@ -117,7 +117,7 @@ jobs:
           projects: |
             $(CEngineTest)
             $(CompilerTest)
-          arguments: '--no-build --no-dependencies -c $(Configuration) --collect:"Code Coverage"'
+          arguments: '--no-build -c $(Configuration) --collect:"Code Coverage"'
           testRunTitle: 'TestingEngine'
           publishTestResults: true
 
