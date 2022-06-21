@@ -1,8 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-		<AssemblyVersion>0.1.0</AssemblyVersion>
-		<FileVersion>0.1.0</FileVersion>
 		<Nullable>enable</Nullable>
 		<OutputType>Library</OutputType>
 		<PackageId>CrossBind.Engine</PackageId>
@@ -10,7 +8,6 @@
 		<PackageProjectUrl>https://crossbind.dev</PackageProjectUrl>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageTags>DSL;Haibth;Transpiler;Frontend;React;Vue;Plugin</PackageTags>
-		<PackageVersion>0.1.0</PackageVersion>
 		<RepositoryUrl>https://dev.azure.com/sovize/_git/CrossBind</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -27,10 +24,6 @@
 			of the CrossBind compiler for th Haibt DSL
 		</Description>
 	</PropertyGroup>
-
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <DocumentationFile>bin\Debug\CrossBind.Engine.xml</DocumentationFile>
-    </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
       <DocumentationFile>bin\Release\CrossBind.Engine.xml</DocumentationFile>

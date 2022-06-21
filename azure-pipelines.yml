@@ -11,6 +11,8 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
+  major: 0
+  minor: 1
   buildPlatform: 'Any CPU'
   Configuration: 'Release'
   win: 'win-x64'
