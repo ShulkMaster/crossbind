@@ -6,6 +6,7 @@
 trigger:
   - master
   - develop
+  - release*
 
 pool:
   vmImage: 'windows-latest'
@@ -35,12 +36,12 @@ jobs:
       buildRun: $[counter(variables['prefix'], 0)]
       buildFlags: '--no-restore --no-dependencies -c $(Configuration)'
       publishFlags: '--no-build --no-dependencies -c $(Configuration)'
+      ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
+        versionFlag: '-p:VersionPrefix=$(prefix) -p:AssemblyVersion=$(prefix)'
       ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
         versionFlag: '-p:VersionPrefix=$(prefix) -p:AssemblyVersion=$(prefix) --version-suffix dev.$(buildRun)'
       ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/release') }}:
         versionFlag: '-p:VersionPrefix=$(prefix) -p:AssemblyVersion=$(prefix) --version-suffix beta.$(buildRun)'
-      ${{ else }}:
-        versionFlag: '-p:VersionPrefix=$(prefix) -p:AssemblyVersion=$(prefix)'
     steps:
       - task: DotNetCoreCLI@2
         displayName: 'Restoring CrossBind Engine'
