@@ -1,14 +1,13 @@
 ﻿using Antlr4.Runtime.Tree;
 using CrossBind.Engine.ComponentModels;
 using CrossBind.Engine.StyleModel;
-using LanguageExt;
 
 namespace CrossBind.Compiler.Visitors.Component;
 
 public class VariantVisitor : HaibtBaseVisitor<ComponentVariant>
 {
     private readonly IHaibtVisitor<ComponentStyle> _styler;
-    private HashMap<string, ComponentVariant> _map = new();
+    private readonly Dictionary<string, ComponentVariant> _map = new();
 
     public VariantVisitor(IHaibtVisitor<ComponentStyle> styler)
     {
@@ -22,7 +21,7 @@ public class VariantVisitor : HaibtBaseVisitor<ComponentVariant>
         {
             Name = name?.GetText() ?? string.Empty,
         };
-        _map = _map.Add(variant.Name, variant);
+        _map.Add(variant.Name, variant);
         return variant;
     }
 
@@ -33,7 +32,7 @@ public class VariantVisitor : HaibtBaseVisitor<ComponentVariant>
         {
             Name = name?.GetText() ?? string.Empty,
         };
-        _map = _map.Add(variant.Name, variant);
+        _map.Add(variant.Name, variant);
         foreach (HaibtParser.Variant_styleContext styleContext in context.variant_style())
         {
             VariantStyle style = VisitVariantStyle(styleContext);
@@ -62,6 +61,10 @@ public class VariantVisitor : HaibtBaseVisitor<ComponentVariant>
     public override ComponentVariant VisitVariant_ext_initialization(
         HaibtParser.Variant_ext_initializationContext context)
     {
-        return base.VisitVariant_ext_initialization(context);
+        string varName = context.IDENTIFIER().GetText() ?? string.Empty;
+        ComponentVariant variant = _map[varName];
+        VariantStyle style = VisitVariantStyle(context.variant_style());
+        variant.Styles.Add(style);
+        return variant;
     }
 }

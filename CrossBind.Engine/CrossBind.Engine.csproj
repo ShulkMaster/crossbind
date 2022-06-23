@@ -4,7 +4,7 @@
         <Nullable>enable</Nullable>
         <OutputType>Library</OutputType>
         <PackageId>CrossBind.Engine</PackageId>
-        <PackageIcon>icon.ico</PackageIcon>
+        <PackageIcon>icon.png</PackageIcon>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageProjectUrl>https://crossbind.dev</PackageProjectUrl>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -33,7 +33,7 @@
     <ItemGroup>
         <Compile Remove="Docs\**" />
         <EmbeddedResource Remove="Docs\**" />
-        <None Include="..\icon.ico">
+        <None Include="..\icon.png">
             <Pack>true</Pack>
             <PackagePath />
         </None>
