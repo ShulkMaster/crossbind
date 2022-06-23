@@ -37,6 +37,8 @@ jobs:
       publishFlags: '--no-build --no-dependencies -c $(Configuration)'
       ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
         versionFlag: '-p:VersionPrefix=$(prefix) -p:AssemblyVersion=$(prefix) --version-suffix dev.$(buildRun)'
+      ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/release') }}:
+        versionFlag: '-p:VersionPrefix=$(prefix) -p:AssemblyVersion=$(prefix) --version-suffix beta.$(buildRun)'
       ${{ else }}:
         versionFlag: '-p:VersionPrefix=$(prefix) -p:AssemblyVersion=$(prefix)'
     steps:
@@ -72,7 +74,7 @@ jobs:
           jdkSourceOption: 'PreInstalled'
 
       - task: PowerShell@2
-        displayName: 'Generating Antr parse Class'
+        displayName: 'Generating Antlr parse Class'
         inputs:
           targetType: 'inline'
           script: |

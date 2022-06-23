@@ -81,7 +81,7 @@ cssMeasure : NUMBER CSS_UNIT? ;
     
     
 variant : 
-    Variant IDENTIFIER SEMI #varianDeclaration
+    Variant IDENTIFIER SEMI #variantDeclaration
     | Variant IDENTIFIER '{' variant_style* '}' #variantInitialization
     ;
     

@@ -1,37 +1,42 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-		<Nullable>enable</Nullable>
-		<OutputType>Library</OutputType>
-		<PackageId>CrossBind.Engine</PackageId>
-		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-		<PackageProjectUrl>https://crossbind.dev</PackageProjectUrl>
-		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<PackageTags>DSL;Haibth;Transpiler;Frontend;React;Vue;Plugin</PackageTags>
-		<RepositoryUrl>https://dev.azure.com/sovize/_git/CrossBind</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Nullable>enable</Nullable>
+        <OutputType>Library</OutputType>
+        <PackageId>CrossBind.Engine</PackageId>
+        <PackageIcon>icon.ico</PackageIcon>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PackageProjectUrl>https://crossbind.dev</PackageProjectUrl>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <PackageTags>DSL;Haibth;Transpiler;Frontend;React;Vue;Plugin</PackageTags>
+        <RepositoryUrl>https://dev.azure.com/sovize/_git/CrossBind</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <TargetFramework>net6.0</TargetFramework>
-		<Title>CrossBind.Engine</Title>
+        <Title>CrossBind.Engine</Title>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
-	<PropertyGroup>
-		<Authors>CrossBind Team</Authors>
-		<Company>CrossBind</Company>
-		<Description>
-			A set of interfaces and class models that allow custom plugins to interact and connect whit the frontend part
-			of the CrossBind compiler for th Haibt DSL
-		</Description>
-	</PropertyGroup>
-
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <DocumentationFile>bin\Release\CrossBind.Engine.xml</DocumentationFile>
+    <PropertyGroup>
+        <Authors>CrossBind Team</Authors>
+        <Company>CrossBind</Company>
+        <Description>
+            A set of interfaces and class models that allow custom plugins to interact and connect whit the frontend part
+            of the CrossBind compiler for th Haibt DSL
+        </Description>
     </PropertyGroup>
 
-	<ItemGroup>
-		<Compile Remove="Docs\**" />
-		<EmbeddedResource Remove="Docs\**" />
-	</ItemGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <DocumentationFile>bin\Release\CrossBind.Engine.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Remove="Docs\**" />
+        <EmbeddedResource Remove="Docs\**" />
+        <None Include="..\icon.ico">
+            <Pack>true</Pack>
+            <PackagePath />
+        </None>
+    </ItemGroup>
 
 </Project>
