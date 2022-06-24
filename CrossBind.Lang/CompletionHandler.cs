@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using OmniSharp.Extensions.LanguageServer.Protocol;
+﻿using CrossBind.Lang.Word;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
@@ -7,37 +6,34 @@ using Serilog.Core;
 
 namespace CrossBind.Lang;
 
-public class CompletionHandler: ICompletionHandler
+public class CompletionHandler : ICompletionHandler
 {
-
     private readonly Logger _logger;
-    
+    private int _count = 0;
+
     public CompletionHandler(Logger logger)
     {
         _logger = logger;
     }
-    
+
     public async Task<CompletionList> Handle(CompletionParams request, CancellationToken cancellationToken)
     {
-        _logger.Information("{Data}", JsonConvert.SerializeObject(request));
-        await Task.Yield();
-        return new CompletionList(new []
+        _count++;
+        var words = Keyword.All.Select(w => new CompletionItem
         {
-            new CompletionItem
-            {
-                Label = "CSharp",
-                Kind = CompletionItemKind.Keyword,
-                InsertText = "HoliFromCSharp",
-                FilterText = "HolaFromC",
-            },
-            new CompletionItem
-            {
-                Label = "C#",
-                Kind = CompletionItemKind.Field,
-                InsertText = "HoliFromC#",
-                FilterText = "HolaFromC",
-            }
+            Label = w,
+            Kind = CompletionItemKind.Keyword,
+            InsertText = "words",
         });
+        words = words.Append(
+            new CompletionItem
+            {
+                Label = $"Intento {_count}",
+                Kind = CompletionItemKind.Constant,
+                InsertText = "HoliFromCSharp",
+            });
+        await Task.Yield();
+        return new CompletionList(words.ToArray());
     }
 
     public CompletionRegistrationOptions GetRegistrationOptions(CompletionCapability capability,

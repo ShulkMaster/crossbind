@@ -11,10 +11,9 @@ public static class Program
         var serilog = new LoggerConfiguration()
             .Enrich
             .FromLogContext()
-            .WriteTo.File("NEPELOG.txt")
+            .WriteTo.File("request.txt")
             .CreateLogger();
         Log.Logger = serilog;
-        serilog.Information("A la verga");
 
         var server = LanguageServer.Create(options =>
         {

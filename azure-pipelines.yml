@@ -136,19 +136,21 @@ jobs:
           publishTestResults: true
           
       - task: PublishCodeCoverageResults@1
+        displayName: 'Publish CodeCoverage Results'
         inputs:
           codeCoverageTool: 'Cobertura'
           summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
 
       - task: PowerShell@2
         name: 'MovingEngine'
-        displayName: 'Moving Engine to StagingDir'
+        displayName: 'Copying packages'
         inputs:
           targetType: 'inline'
           script: |
             mkdir $(Build.ArtifactStagingDirectory)\Engine
             Move-Item -Path .\CrossBind.Engine\bin\$(Configuration)\*.nupkg -Destination $(Build.ArtifactStagingDirectory)\Engine\
-            ls .\CrossBind.Engine\bin\$(Configuration)\net6.0
+            Move-Item -Path .\CrossBind.Compiler\bin\$(Configuration)\*.nupkg -Destination $(Build.ArtifactStagingDirectory)\Engine\
+            ls $(Build.ArtifactStagingDirectory)\Engine\
 
       - task: DotNetCoreCLI@2
         displayName: 'Publish CLI & LSP Windows'
