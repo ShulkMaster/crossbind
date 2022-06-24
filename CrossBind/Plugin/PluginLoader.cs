@@ -10,14 +10,14 @@ public class PluginLoader
 
     public PluginLoader()
     {
-        string assemblyDir = Assembly.GetAssembly(typeof(PluginLoader))?.Location ?? "";
+        string assemblyDir = AppContext.BaseDirectory;
         string info = new FileInfo(assemblyDir).DirectoryName ?? BasePath;
         _context = new PluginContext(info);
     }
     
     private static IEnumerable<string> GetDllDirs()
     {
-        string assemblyDir = Assembly.GetAssembly(typeof(PluginLoader))?.Location ?? "";
+        string assemblyDir = AppContext.BaseDirectory;
         string info = new FileInfo(assemblyDir).DirectoryName ?? "";
         return Directory.EnumerateFiles(Path.Combine(info, BasePath), "*.dll");
     }
