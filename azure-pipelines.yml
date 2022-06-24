@@ -56,7 +56,7 @@ jobs:
         inputs:
           FromBuildId: '$(Build.BuildId)'
           ToBuildId: $(lastBuildId)
-          ReleaseNotesPath: 'CrossBind.Engine/CHANGELOG.md'
+          ReleaseNotesPath: 'CrossBind.Engine'
           ReleaseNotesFile: 'ReleaseNotes.md'
           AdditionalNote: 'CrossBind Team'
           Test: true
@@ -161,7 +161,7 @@ jobs:
             Move-Item -Path .\CrossBind.Engine\bin\$(Configuration)\*.nupkg -Destination $(Build.ArtifactStagingDirectory)\Engine\
             Move-Item -Path .\CrossBind.Compiler\bin\$(Configuration)\*.nupkg -Destination $(Build.ArtifactStagingDirectory)\Engine\
             ls $(Build.ArtifactStagingDirectory)\Engine\
-            cat .\CrossBind.Engine\CHANGELOG.md
+            cat .\CrossBind.Engine\ReleaseNotes.md
 
       - task: DotNetCoreCLI@2
         displayName: 'Publish CLI & LSP Windows'
