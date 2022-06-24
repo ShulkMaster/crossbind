@@ -34,6 +34,10 @@
             <Pack>true</Pack>
             <PackagePath />
         </None>
+        <Content Include="README.md">
+            <Pack>true</Pack>
+            <PackagePath>README.md</PackagePath>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
