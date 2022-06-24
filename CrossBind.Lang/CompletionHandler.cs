@@ -23,7 +23,7 @@ public class CompletionHandler : ICompletionHandler
         {
             Label = w,
             Kind = CompletionItemKind.Keyword,
-            InsertText = "words",
+            InsertText = w,
         });
         words = words.Append(
             new CompletionItem

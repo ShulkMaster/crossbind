@@ -10,7 +10,7 @@ public static class FrontCompiler
 {
     public static Result<UnitModel> CompileUnitFile(string filePath)
     {
-        bool isPath = Path.IsPathRooted(filePath);
+        bool isPath = File.Exists(filePath);
 
         var listener = new HaibtLexerErrorListener();
         var unitVisitor = new UnitVisitor

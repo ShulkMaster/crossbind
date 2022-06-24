@@ -16,7 +16,7 @@ public class ReactEngine : IEngine
     public int PathVersion => 0;
     public EngineTarget Target => EngineTarget.React;
 
-    private static SourceFile CompileComponent(ComponentModel model, StringBuilder sb)
+    private static SourceFile CompileComponent(ComponentModel model, StringBuilder sb, string source)
     {
         sb.Append(DomReactTypes.GetReactImports(model.Extends));
         (string typeName, string typeDefinition) = DomReactTypes.GetDomType(model.Extends);
@@ -41,22 +41,22 @@ public class ReactEngine : IEngine
             tag += " type='text'";
         }
 
-        sb.Append($") => {{\n// Todo fill the code\n return <{tag} {{...props}} />\n}};\n");
+        sb.Append($") => {{\n// Todo fill the code\n return <{tag} className='{model.Name}' {{...props}} />\n}};\n");
         string styles = CompileStyle(model.Body.BaseStyles, model.Name);
-        return new SourceFile(model.Name, "css")
+        return new SourceFile(source, "css")
         {
             SourceCode = styles,
             SourceName = model.ModuleId,
         };
     }
 
-    private static SourceFile CompileModel(BindModel model, StringBuilder sb)
+    private static SourceFile CompileModel(BindModel model, StringBuilder sb, string src)
     {
         switch (model)
         {
             case ComponentModel cModel:
             {
-                return CompileComponent(cModel, sb);
+                return CompileComponent(cModel, sb, src);
             }
         }
 
@@ -69,9 +69,13 @@ public class ReactEngine : IEngine
         sb.Append($".{baseName} {{\n");
         foreach (var style in styles)
         {
-            sb.Append($"  {style.Key}: ");
-            sb.Append(style.StringValue);
-            sb.Append(";\n");
+            if (style.Key == "background-color")
+            {
+                sb.AppendFormat("  background-color: {0};\n", style.StringValue);
+                continue;
+            }
+
+            sb.AppendFormat("  {0}", style.StringValue);
         }
         sb.Append("}\n");
         return sb.ToString();
@@ -94,12 +98,12 @@ public class ReactEngine : IEngine
 
         sb.Append("import './");
         sb.Append(fileName);
-        sb.Append(".css';");
+        sb.Append(".css';\n\r");
 
         var files = new List<SourceFile>();
         foreach (var model in unit.Models)
         {
-            var source = CompileModel(model, sb);
+            var source = CompileModel(model, sb, fileName);
             files.Add(source);
         }
 

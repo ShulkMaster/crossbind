@@ -16,13 +16,76 @@ if you need to retarget the Haibt code to other platforms but without dealing wi
 of the source files.
 
 # Projects
+
 The following projects are part of the CrossBind infrastructure:
- - [CrossBind Engine](./CrossBind.Engine/README.md)
- - [CrossBind Engine](./CrossBind.Compiler/README.md)
+
+## Builds
+- develop [![Build Status](https://dev.azure.com/sovize/CrossBind/_apis/build/status/CrossBind?branchName=develop)](https://dev.azure.com/sovize/CrossBind/_build/latest?definitionId=2&branchName=develop)
+- beta    [![Build Status](https://dev.azure.com/sovize/CrossBind/_apis/build/status/CrossBind?branchName=release%2Fv0.1.0)](https://dev.azure.com/sovize/CrossBind/_build/latest?definitionId=2&branchName=release%2F*)
+- master  [![Build Status](https://dev.azure.com/sovize/CrossBind/_apis/build/status/CrossBind?branchName=master)](https://dev.azure.com/sovize/CrossBind/_build/latest?definitionId=2&branchName=master)
+
+
+## Deployments
+<table>
+    <tr>
+        <th>RELEASE</th>
+        <th><a href="CrossBind.Engine/README.md">CrossBind Engine</a></th>
+        <th><a href="CrossBind.Compiler/README.md">CrossBind Compiler</a></th>
+        <th><a href="CrossBind/README.md">CrossBind CLI</a></th>
+        <th><a href="CrossBind.Lang/README.md">CrossBind LSP</a></th>
+    </tr>
+    <tr>
+        <th>Canary</th>
+        <td>
+            <img src="https://vsrm.dev.azure.com/sovize/_apis/public/Release/badge/df07a3c2-4bca-419c-a1d5-1af6bc9cc1b8/1/1" alt="deployment"/>
+        </td>
+        <td>
+            <img src="https://vsrm.dev.azure.com/sovize/_apis/public/Release/badge/df07a3c2-4bca-419c-a1d5-1af6bc9cc1b8/1/1" alt="deployment"/>
+        </td>
+        <td>
+            <img src="https://vsrm.dev.azure.com/sovize/_apis/public/Release/badge/df07a3c2-4bca-419c-a1d5-1af6bc9cc1b8/1/1" alt="deployment"/>
+        </td>
+        <td>
+            <img src="https://vsrm.dev.azure.com/sovize/_apis/public/Release/badge/df07a3c2-4bca-419c-a1d5-1af6bc9cc1b8/1/1" alt="deployment"/>
+        </td>
+    </tr>
+    <tr>
+        <th>Beta</th>
+        <td>
+            <img src="https://vsrm.dev.azure.com/sovize/_apis/public/Release/badge/df07a3c2-4bca-419c-a1d5-1af6bc9cc1b8/2/4" alt="deployment"/>
+        </td>
+        <td>
+            <img src="https://vsrm.dev.azure.com/sovize/_apis/public/Release/badge/df07a3c2-4bca-419c-a1d5-1af6bc9cc1b8/2/4" alt="deployment"/>
+        </td>
+        <td>
+            <img src="https://vsrm.dev.azure.com/sovize/_apis/public/Release/badge/df07a3c2-4bca-419c-a1d5-1af6bc9cc1b8/2/3" alt="deployment"/>
+        </td>
+        <td>
+            <img src="https://vsrm.dev.azure.com/sovize/_apis/public/Release/badge/df07a3c2-4bca-419c-a1d5-1af6bc9cc1b8/2/3" alt="deployment"/>
+        </td>
+    </tr>
+    <tr>
+        <th>Prod</th>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
+    </tr>
+</table>
 
 # :link: Links
- - [Official Website](https://crossbind.dev/)
- - [Plugin documentation](https://crossbind.dev/docs/beta/)
+
+- [Official Website](https://crossbind.dev/)
+- [Plugin documentation](https://crossbind.dev/docs/beta/)
+
+## Downloads
+- __Canary__
+    - *CLI*
+        - [Linux x64](http://crossbind.dev/bin/latest/CrossBind)
+        - [Windows x64](http://crossbind.dev/bin/latest/CrossBind.exe)
+    - *LSP*
+        - [Linux x64](http://crossbind.dev/bin/latest/CrossBind.Lang)
+        - [Windows x64](http://crossbind.dev/bin/latest/CrossBind.Lang.exe)
 
 # License
 

@@ -5,6 +5,12 @@ plugins implement to interoperate correctly. It also has some utility classes su
 CSS processing and metadata extraction so that the plugins can generate code
 as accurate as possible.
 
+## Builds
+- develop [![Build Status](https://dev.azure.com/sovize/CrossBind/_apis/build/status/CrossBind?branchName=develop)](https://dev.azure.com/sovize/CrossBind/_build/latest?definitionId=2&branchName=develop)
+- beta    [![Build Status](https://dev.azure.com/sovize/CrossBind/_apis/build/status/CrossBind?branchName=release%2Fv0.1.0)](https://dev.azure.com/sovize/CrossBind/_build/latest?definitionId=2&branchName=release%2F*)
+- master  [![Build Status](https://dev.azure.com/sovize/CrossBind/_apis/build/status/CrossBind?branchName=master)](https://dev.azure.com/sovize/CrossBind/_build/latest?definitionId=2&branchName=master)
+
+## Setup
 Once the porject is added to your dependencies make sure to add the following
 lines to your `csproj` file.
 

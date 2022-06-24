@@ -26,13 +26,18 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="ParserTest" />
-    </ItemGroup>
-
-    <ItemGroup>
       <None Update="code\*">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Remove="ParserTest\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="ParserTest\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="ParserTest\**" />
     </ItemGroup>
 
 </Project>
