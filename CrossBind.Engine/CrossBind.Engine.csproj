@@ -7,6 +7,7 @@
         <PackageIcon>icon.png</PackageIcon>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageProjectUrl>https://crossbind.dev</PackageProjectUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageTags>DSL;Haibth;Transpiler;Frontend;React;Vue;Plugin</PackageTags>
         <RepositoryUrl>https://dev.azure.com/sovize/_git/CrossBind</RepositoryUrl>
@@ -33,14 +34,8 @@
     <ItemGroup>
         <Compile Remove="Docs\**" />
         <EmbeddedResource Remove="Docs\**" />
-        <None Include="..\icon.png">
-            <Pack>true</Pack>
-            <PackagePath />
-        </None>
-        <Content Include="README.md">
-            <Pack>true</Pack>
-            <PackagePath>README.md</PackagePath>
-        </Content>
+        <None Include="..\icon.png" Pack="true" PackagePath="\" />
+        <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
 </Project>
