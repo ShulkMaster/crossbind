@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <DebugType>embedded</DebugType>
         <Nullable>enable</Nullable>
         <OutputType>Library</OutputType>
         <PackageId>CrossBind.Compiler</PackageId>
