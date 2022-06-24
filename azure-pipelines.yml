@@ -53,13 +53,13 @@ jobs:
           vstsFeed: 'c02610e3-ed5a-4422-8dfc-732f5bdef937'
 
       - task: GenerateReleaseNotes@0
-          inputs:
-            FromBuildId: '$(Build.BuildId)'
-            ToBuildId: $(lastBuildId)
-            ReleaseNotesPath: 'CrossBind.Engine/CHANGELOG.md'
-            ReleaseNotesFile: 'ReleaseNotes.md'
-            AdditionalNote: 'CrossBind Team'
-            Test: true
+        inputs:
+          FromBuildId: '$(Build.BuildId)'
+          ToBuildId: $(lastBuildId)
+          ReleaseNotesPath: 'CrossBind.Engine/CHANGELOG.md'
+          ReleaseNotesFile: 'ReleaseNotes.md'
+          AdditionalNote: 'CrossBind Team'
+          Test: true
 
       - task: ExtractFiles@1
         displayName: 'Extracting DocFx'
