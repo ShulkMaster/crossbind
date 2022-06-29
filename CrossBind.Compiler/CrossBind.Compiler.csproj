@@ -1,22 +1,48 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <Nullable>enable</Nullable>
+        <OutputType>Library</OutputType>
+        <PackageId>CrossBind.Compiler</PackageId>
+        <PackageIcon>icon.png</PackageIcon>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PackageProjectUrl>https://crossbind.dev</PackageProjectUrl>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <PackageTags>DSL;Haibth;Transpiler;Frontend;Parser</PackageTags>
+        <RepositoryUrl>https://dev.azure.com/sovize/_git/CrossBind</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <TargetFramework>net6.0</TargetFramework>
+        <Title>CrossBind.Compiler</Title>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Parser" />
-  </ItemGroup>
+    <PropertyGroup>
+        <Authors>CrossBind Team</Authors>
+        <Company>CrossBind</Company>
+        <Description>
+            Contains the basic classes and utilities to parse Haibt source code
+            into the corresponding intermidiate representation CMU, use this package if
+            you need to build your on CLI or compiler, otherwise to create a plugin
+            please use the CrossBind.Engine package
+        </Description>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CrossBind.Engine\CrossBind.Engine.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Parser" />
+        <None Include="..\icon.png">
+            <Pack>true</Pack>
+            <PackagePath />
+        </None>
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.10.1" />
-    <PackageReference Include="LanguageExt.Core" Version="4.2.2" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\CrossBind.Engine\CrossBind.Engine.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.10.1" />
+        <PackageReference Include="LanguageExt.Core" Version="4.2.2" />
+    </ItemGroup>
 
 </Project>

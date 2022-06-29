@@ -53,7 +53,8 @@
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
     "template": [
-      "default"
+      "default",
+      "../Gen/singulinkfx"
     ],
     "postProcessors": [],
     "markdownEngineName": "markdig",

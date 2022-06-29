@@ -13,7 +13,7 @@ public static class FrontCompiler
         bool isPath = Path.IsPathRooted(filePath);
 
         var listener = new HaibtLexerErrorListener();
-        var unitVisitor = new UnitVisitor()
+        var unitVisitor = new UnitVisitor
         {
             FilePath = filePath,
         };
