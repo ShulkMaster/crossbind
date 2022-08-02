@@ -14,7 +14,12 @@ public class BodyVisitor : HaibtBaseVisitor<ComponentBody>
             body.BaseStyles.Add(styleVisitor.Visit(cssRule));
         }
 
-        context.variant();
+        foreach (HaibtParser.VariantContext? variant in context.variant())
+        {
+            variantVisitor.Visit(variant);
+        }
+        
+        body.Variants.AddRange(variantVisitor.map.Values);
 
         return body;
     }
