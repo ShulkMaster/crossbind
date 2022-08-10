@@ -12,6 +12,6 @@ public class ComponentVariant
 {
     public string Name { get; set; } = string.Empty;
     public List<VariantStyle> Styles { get; init; } = new();
-
+    public string Action { get; set; } = string.Empty;
     public IEnumerable<string> GetKeys() => Styles.Select(s => s.ValueKey);
 }

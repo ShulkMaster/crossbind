@@ -24,7 +24,18 @@ public class ReactEngine : IEngine
         sb.Append(typeDefinition);
         // todo code that gets every prop in the component
         sb.Append($"\nexport type {model.Name}Props = {{\n");
-        // todo write every props in type
+
+        foreach (var variant in model.Body.Variants)
+        {
+            sb.Append($"  {variant.Name}: ");
+            foreach (VariantStyle style in variant.Styles)
+            {
+                sb.Append($"'{style.ValueKey}' |");
+            }
+            sb.Replace('|', ';', sb.Length - 1, 1);
+            sb.Append('\n');
+        }
+
         if (typeName != string.Empty)
         {
             sb.Append($"}} & {typeName};\n");
@@ -41,7 +52,12 @@ public class ReactEngine : IEngine
             tag += " type='text'";
         }
 
-        sb.Append($") => {{\n// Todo fill the code\n return <{tag} className='{model.Name}' {{...props}} />\n}};\n");
+        ComponentVariant variantM = model.Body.Variants.First();
+        
+        sb.Append($") => {{\n");
+
+        sb.Append($"  const {variantM.Name} = ");
+        // Todo fill the code\n return <{tag} className='{model.Name}' {{...props}} />\n}};\n");
         string styles = CompileStyle(model.Body.BaseStyles, model.Name);
         return new SourceFile(source, "css")
         {

@@ -1,4 +1,5 @@
-﻿using CommandLine;
+﻿using System.Reactive.Linq;
+using CommandLine;
 using CrossBind.Commands;
 using CrossBind.Compiler;
 using CrossBind.Engine;
@@ -9,13 +10,22 @@ namespace CrossBind;
 
 public static class Program
 {
+    private static readonly ManualResetEvent QuitEvent = new(false);
+
     public static int Main(string[] args)
     {
         var commander = Parser.Default;
+
+        Console.CancelKeyPress += (_, evt) =>
+        {
+            QuitEvent.Set();
+            evt.Cancel = true;
+        };
+        
         return commander.ParseArguments<Project, Compile, int>(args)
             .MapResult<Project, Compile, int>(
                 ProjectCommand,
-                CompileCommand,
+                CompileCommandProxy,
                 ErrorHandler
             );
     }
@@ -24,6 +34,29 @@ public static class Program
     {
         Console.Error.WriteLine("Not implemented");
         return -2;
+    }
+
+    private static int CompileCommandProxy(Compile command)
+    {
+        string fileName = command.Source.First();
+        Console.WriteLine("Watching file: {0}", fileName);
+        var watcher = new FileSystemWatcher(Path.GetDirectoryName(fileName)!);
+        watcher.EnableRaisingEvents = true;
+        watcher.Filter = "*.hbt";
+        watcher.NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.LastWrite;
+        var observable = Observable.FromEventPattern<FileSystemEventHandler, FileSystemEventArgs>(
+            fileHandler => watcher.Changed += fileHandler,
+            fileHandler => watcher.Changed -= fileHandler)
+            .Throttle(TimeSpan.FromSeconds(0.1));
+        
+        IDisposable disposable = observable.Subscribe(evt =>
+        {
+            CompileCommand(command);
+        });
+        QuitEvent.WaitOne();
+        disposable.Dispose();
+        watcher.Dispose();
+        return 0;
     }
 
     private static int CompileCommand(Compile command)
