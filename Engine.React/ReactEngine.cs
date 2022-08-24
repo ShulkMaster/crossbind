@@ -27,7 +27,7 @@ public class ReactEngine : IEngine
 
         foreach (var variant in model.Body.Variants)
         {
-            sb.Append($"  {variant.Name}: ");
+            sb.Append($"  {variant.Name}?: ");
             foreach (VariantStyle style in variant.Styles)
             {
                 sb.Append($"'{style.ValueKey}' |");
@@ -55,13 +55,15 @@ public class ReactEngine : IEngine
         ComponentVariant variantM = model.Body.Variants.First();
         
         sb.Append($") => {{\n");
+        var x = model.Body.Variants.First();
+        sb.Append($"  const {variantM.Name} = props.{x.Name} || '{x.Styles.First().ValueKey}';\n");
+        sb.Append($"// Todo fill the code\nreturn <{tag} className={{`{model.Name} ${{{variantM.Name}}}`}} {{...props}} />\n}};\n");
 
-        sb.Append($"  const {variantM.Name} = ");
-        // Todo fill the code\n return <{tag} className='{model.Name}' {{...props}} />\n}};\n");
         string styles = CompileStyle(model.Body.BaseStyles, model.Name);
+        string vars = CompileVariant(model.Body.Variants.First(), model.Name);
         return new SourceFile(source, "css")
         {
-            SourceCode = styles,
+            SourceCode = $"{styles}\n{vars}",
             SourceName = model.ModuleId,
         };
     }
@@ -94,6 +96,28 @@ public class ReactEngine : IEngine
             sb.AppendFormat("  {0}", style.StringValue);
         }
         sb.Append("}\n");
+        return sb.ToString();
+    }
+
+    private static string CompileVariant(ComponentVariant variant, string baseName)
+    {
+        var sb = new StringBuilder();
+        foreach (var value in variant.Styles)
+        {
+            sb.Append($".{baseName}.{value.ValueKey} {{\n");
+            foreach (var style in value.VariantStyles)
+            {
+                if (style.Key == "background-color")
+                {
+                    sb.AppendFormat("  background-color: {0};\n", style.StringValue);
+                    continue;
+                }
+
+                sb.AppendFormat("  {0}", style.StringValue);
+            }
+            sb.Append("}\n");
+        }
+        
         return sb.ToString();
     }
 
