@@ -1,12 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <DebugType>embedded</DebugType>
         <Nullable>enable</Nullable>
         <OutputType>Library</OutputType>
         <PackageId>CrossBind.Compiler</PackageId>
         <PackageIcon>icon.png</PackageIcon>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageProjectUrl>https://crossbind.dev</PackageProjectUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageTags>DSL;Haibth;Transpiler;Frontend;Parser</PackageTags>
         <RepositoryUrl>https://dev.azure.com/sovize/_git/CrossBind</RepositoryUrl>
@@ -30,10 +32,8 @@
 
     <ItemGroup>
         <Folder Include="Parser" />
-        <None Include="..\icon.png">
-            <Pack>true</Pack>
-            <PackagePath />
-        </None>
+        <None Include="..\icon.png" Pack="true" PackagePath="\" />
+        <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
     <ItemGroup>

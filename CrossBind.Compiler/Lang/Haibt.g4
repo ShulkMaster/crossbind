@@ -37,7 +37,9 @@ STRING: SINGLEQ .*? SINGLEQ;
 Variant: 'variant';
 HEX_COLOR: '#' (HEX HEX HEX HEX HEX HEX| HEX HEX HEX);
 CSS_UNIT: 'px' | 'em' | 'rem';
-BORDER_STYLE: 'dotted' | 'dashed' | 'solid' | 'double' | 'none' | 'hidden';
+NONE: 'none';
+BORDER_STYLE: 'dotted' | 'dashed' | 'solid' | 'double' | NONE | 'hidden';
+ACTION_STYLE: 'disabled' | 'active' | 'hoover' | NONE;
 
 CANNON_COMP: 'button' | 'select' | 'textbox';
 // must be last to avoid overlapping
@@ -59,7 +61,7 @@ compDeclaration:
     COMPONENT IDENTIFIER (EXTENDS CANNON_COMP)? '{' body '}';
 
 body:
-    (css_statement | variant | variant_ext_initialization)*
+    (css_statement | variant)*
 ;
 
 css_statement: 
@@ -82,10 +84,10 @@ cssMeasure : NUMBER CSS_UNIT? ;
     
 variant : 
     Variant IDENTIFIER SEMI #variantDeclaration
-    | Variant IDENTIFIER '{' variant_style* '}' #variantInitialization
+    | IDENTIFIER variant_style #variantInitialization
+    | IDENTIFIER variant_action #variantAction
     ;
     
 variant_style : IDENTIFIER '{' css_statement* '}';
-    
-variant_ext_initialization :
-    IDENTIFIER '.' variant_style;
+
+variant_action : IDENTIFIER ACTION_STYLE '{' css_statement* '}';

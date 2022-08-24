@@ -53,7 +53,7 @@ public static class DomReactTypes
         switch (extend)
         {
             case Extendable.Button:
-                return startImport + attribImport + "ButtonHTMLAttributes, HTMLButtonElement } " + endImport;
+                return startImport + attribImport + "ButtonHTMLAttributes } " + endImport;
             case Extendable.Select:
                 break;
             case Extendable.TextBox:

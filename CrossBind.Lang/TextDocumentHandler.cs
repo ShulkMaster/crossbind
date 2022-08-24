@@ -43,7 +43,6 @@ public class TextDocumentHandler : ITextDocumentSyncHandler
         GetRegistrationOptions(SynchronizationCapability capability,
             ClientCapabilities clientCapabilities)
     {
-        _logger.Information("Rgistering shit");
         return new TextDocumentOpenRegistrationOptions
         {
             DocumentSelector = _documentSelector,
@@ -64,7 +63,7 @@ public class TextDocumentHandler : ITextDocumentSyncHandler
         GetRegistrationOptions(SynchronizationCapability capability,
             ClientCapabilities clientCapabilities)
     {
-        _logger.Information("Registerin text saved");
+        _logger.Information("Registering text saved");
         return new TextDocumentSaveRegistrationOptions
         {
             DocumentSelector = _documentSelector,
@@ -99,7 +98,7 @@ public class TextDocumentHandler : ITextDocumentSyncHandler
 
     public Task<Unit> Handle(DidCloseTextDocumentParams request, CancellationToken cancellationToken)
     {
-        _logger.Information("Registerin close document");
+        _logger.Information("Registering close document");
         return Unit.Task;
     }
 }

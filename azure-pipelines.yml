@@ -16,6 +16,7 @@ variables:
   minor: 1
   patch: 0
   prefix: $(major).$(minor).$(patch)
+  lastBuildId: 62
   Configuration: 'Release'
   win: 'win-x64'
   linux: 'linux-x64'
@@ -50,6 +51,15 @@ jobs:
           feedsToUse: 'select'
           projects: '**/*.csproj'
           vstsFeed: 'c02610e3-ed5a-4422-8dfc-732f5bdef937'
+
+      - task: GenerateReleaseNotes@0
+        inputs:
+          FromBuildId: '$(Build.BuildId)'
+          ToBuildId: $(lastBuildId)
+          ReleaseNotesPath: 'CrossBind.Engine'
+          ReleaseNotesFile: 'ReleaseNotes.md'
+          AdditionalNote: 'CrossBind Team'
+          Test: true
 
       - task: ExtractFiles@1
         displayName: 'Extracting DocFx'
@@ -94,7 +104,7 @@ jobs:
         inputs:
           command: 'build'
           projects: $(Compiler)
-          arguments: $(buildFlags)
+          arguments: '$(buildFlags) $(versionFlag)'
 
       - task: DotNetCoreCLI@2
         displayName: 'Compile CLI & LSP Windows'
@@ -136,19 +146,22 @@ jobs:
           publishTestResults: true
           
       - task: PublishCodeCoverageResults@1
+        displayName: 'Publish CodeCoverage Results'
         inputs:
           codeCoverageTool: 'Cobertura'
           summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
 
       - task: PowerShell@2
         name: 'MovingEngine'
-        displayName: 'Moving Engine to StagingDir'
+        displayName: 'Copying packages'
         inputs:
           targetType: 'inline'
           script: |
             mkdir $(Build.ArtifactStagingDirectory)\Engine
             Move-Item -Path .\CrossBind.Engine\bin\$(Configuration)\*.nupkg -Destination $(Build.ArtifactStagingDirectory)\Engine\
-            ls .\CrossBind.Engine\bin\$(Configuration)\net6.0
+            Move-Item -Path .\CrossBind.Compiler\bin\$(Configuration)\*.nupkg -Destination $(Build.ArtifactStagingDirectory)\Engine\
+            ls $(Build.ArtifactStagingDirectory)\Engine\
+            cat .\CrossBind.Engine\ReleaseNotes.md
 
       - task: DotNetCoreCLI@2
         displayName: 'Publish CLI & LSP Windows'
