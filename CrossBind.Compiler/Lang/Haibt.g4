@@ -3,43 +3,63 @@ grammar Haibt;
 fragment DIGIT : [0-9] ;
 fragment LOWERCASE  : [a-z] ;
 fragment UPPERCASE  : [A-Z] ;
-fragment HEX  : [0-9A-F] ;
+fragment HEX  : [0-9A-Fa-f] ;
 
 NUMBER: DIGIT+ ([.,_] DIGIT+)? ;
 VALID_START: LOWERCASE | UPPERCASE | '_';
 VALID_FOLLOW: VALID_START | DIGIT;
 
+// Keywords
+EVENT: 'event';
+PROP: 'prop';
+TRUE: 'true';
+FALSE: 'false';
+IMPORT: 'import';
+TYPE: 'type';
+CONST: 'const';
+LET: 'let';
+FROM: 'from';
+
 // CSS Rule properties
-BackgroundColor : 'backgroundColor';
+BackgroundColor : 'backgroundColor' | 'background-color';
 Border : 'border';
 Padding: 'padding';
 Margin: 'margin';
 Color: 'color';
 Height: 'height';
 Width: 'width';
-FontSize: 'fontSize';
+FontSize: 'fontSize' | 'font-size';
 Cursor : 'cursor';
 Display: 'display';
-ZINDEX: 'zIndex';
+ZINDEX: 'zIndex' | 'z-index';
 BORDER_RADIUS : 'borderRadius';
 
 WhiteSpaces: [\t\u000B\u000C\u0020\u00A0]+ -> channel(HIDDEN);
 LineTerminator: [\r\n\u2028\u2029] -> channel(HIDDEN);
-
+DOT: '.';
 SEMI: ';';
 COLON: ':';
+EQ: '=';
 COMPONENT: 'component';
 EXTENDS: 'extends';
-IMPORT: 'import';
-FROM: 'from';
-SINGLEQ: '\'';
-STRING: SINGLEQ .*? SINGLEQ;
+PLUS: '+';
+MINUS: '-';
+TIMES: '*';
+DIV: '/';
+DOUBLEQ: '"';
+STRING: DOUBLEQ .*? DOUBLEQ;
 Variant: 'variant';
 HEX_COLOR: '#' (HEX HEX HEX HEX HEX HEX| HEX HEX HEX);
 CSS_UNIT: 'px' | 'em' | 'rem';
+SING: PLUS | MINUS;
 NONE: 'none';
+SHADES: '0' | '1' | '2' | '3' | '4' | '5';
+BOOLEAN: TRUE | FALSE;
+MATH_OPERATOR: PLUS | MINUS | TIMES | DIV;
 BORDER_STYLE: 'dotted' | 'dashed' | 'solid' | 'double' | NONE | 'hidden';
 ACTION_STYLE: 'disabled' | 'active' | 'hoover' | NONE;
+PRIMIRIVE_TYPE: 'string' | 'number' | 'bool' | Color;
+CONST_VALUE: NUMBER | STRING | BOOLEAN; 
 
 CANNON_COMP: 'button' | 'select' | 'textbox';
 // must be last to avoid overlapping
@@ -47,25 +67,29 @@ IDENTIFIER: VALID_START + VALID_FOLLOW*;
 
 translationUnit:
     importStatement*
-    (libFile | compDeclaration)*
+    (css_rule | compDeclaration)*
     EOF
     ;
     
 importStatement: FROM STRING IMPORT '{' IDENTIFIER (',' IDENTIFIER)* '}' SEMI;
 
-libFile: 
-    ('lib' '{' '}')+
-    ;
+css_rule: 
+    complex_rule |
+    simple_rule ;
+    
+simple_rule: DOT IDENTIFIER '{' css_statement* '}';
+
+complex_rule: DOT IDENTIFIER (DOT IDENTIFIER)+ '{' css_statement* '}';
 
 compDeclaration: 
     COMPONENT IDENTIFIER (EXTENDS CANNON_COMP)? '{' body '}';
 
 body:
-    (css_statement | variant)*
+    (css_statement | variant | script)*
 ;
 
 css_statement: 
-      (BackgroundColor ':' HEX_COLOR SEMI) #bgColor
+      (BackgroundColor ':' color_stm SEMI) #bgColor
     |  Border ':' borderValue #inlineBorder
     | ( Border ':' '{' borderValue borderValue? borderValue? borderValue? '}') #compoundBorder
     | ZINDEX ':' NUMBER SEMI #zIndex
@@ -76,7 +100,11 @@ css_statement:
     | Height ':' cssMeasure SEMI #height
     ;
 
-borderValue : cssMeasure? BORDER_STYLE HEX_COLOR? SEMI;
+borderValue : cssMeasure? BORDER_STYLE color_stm? SEMI;
+
+color_stm:
+    HEX_COLOR ('['SING? SHADES ']')? # consColor |
+    IDENTIFIER ('['SING? SHADES ']')? # refColor;  
 
 clockRule : cssMeasure cssMeasure? cssMeasure? cssMeasure?;
 cssMeasure : NUMBER CSS_UNIT? ;
@@ -91,3 +119,21 @@ variant :
 variant_style : IDENTIFIER '{' css_statement* '}';
 
 variant_action : IDENTIFIER ACTION_STYLE '{' css_statement* '}';
+
+script: declaration | assigment | initialization;
+
+declaration: (CONST | LET) IDENTIFIER COLON (PRIMIRIVE_TYPE | IDENTIFIER) SEMI;
+
+assigment:
+    IDENTIFIER EQ IDENTIFIER SEMI # byref |
+    IDENTIFIER EQ CONST_VALUE SEMI # byconst |
+    IDENTIFIER EQ exp SEMI # byexp;
+    
+initialization:
+   initializer IDENTIFIER SEMI # initbyref |
+   initializer CONST_VALUE SEMI # initbyconst |
+   initializer exp SEMI # initbyexp;
+
+initializer: (CONST | LET) IDENTIFIER (COLON (PRIMIRIVE_TYPE | IDENTIFIER))? EQ;
+    
+exp: NUMBER MATH_OPERATOR NUMBER SEMI;
