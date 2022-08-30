@@ -2,20 +2,18 @@
 <docs>
     <class>
         <summary>
-            This is the interface that every plugin must implement to be loaded by the frontend compiler
-            and generate the target code
+            This is the interface represent an Engine that can turn the CMU object structure into the final
+            code for the target platform
         </summary>
     </class>
-    <PluginId>
+    <Name>
         <summary>
-            Unique identifier for the plugin, spaces and non ACSII caracters are nor allow, this ID is use
-            for by the runtime to resolve when two or more <see cref="T:CrossBind.Engine.IEngine">Engines</see>
-            are capable of output to the same requested target
+            The name of the Engine, mainly use in log messages
         </summary>
-    </PluginId>
+    </Name>
     <CompileUnitFile>
         <summary>
-            Called for every CMU loaded and parsed from a file on dics
+            Called for every CMU loaded and parsed from a file on disk
         </summary>
     </CompileUnitFile>
 </docs>

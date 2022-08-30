@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<docs>
+    <class>
+        <summary>
+            This is the interface that every plugin must a single implementation with a parameless constructor
+            to be loaded by the frontend compiler and generate the target code
+        </summary>
+    </class>
+    <Version>
+        <summary>
+            Represent the plugin semantic version
+        </summary>
+    </Version>
+    <Name>
+        <summary>
+            The name of the Plugin, mainly use in log messages and display to the user
+        </summary>
+    </Name>
+    <PluginId>
+        <summary>
+            Unique identifier for the plugin, spaces and non ACSII caracters are nor allow, this ID is use
+            by the runtime to resolve when two or more <see cref="T:CrossBind.Engine.ICrossPlugin">Plugins</see>
+            are capable of output to the same requested target.
+        </summary>
+        <remarks>
+            this string is case insensitive
+            Formar: [target]_[lang]_[vendor]_[plugin name]
+        </remarks>
+        <example>REACT_TS_CROSSBIND_MYPLUGIN</example>
+    </PluginId>
+    <Target>
+        <summary>
+            Represents the name of the target a given <see cref="T:CrossBind.Engine.ICrossPlugin">Plugin</see>
+            is capable of generating output. To see the recomended names for target <url>here</url>
+        </summary>
+        <remarks>
+            this string is case insensitive
+        </remarks>
+    </Target>
+    <GetEngineInstance>
+        <summary>
+            Creates an instance of an engine from the given <param>options</param> and production
+            values
+        </summary>
+        <param name="production">
+            boolean flag indicating wheter the code is for prod use or not, use this
+            to generate code better suited for debuggin if false
+        </param>
+        <param name="options">A JsonObject containing values for custom plugin options</param>
+    </GetEngineInstance>
+</docs>

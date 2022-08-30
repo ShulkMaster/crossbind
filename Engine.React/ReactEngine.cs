@@ -9,12 +9,7 @@ namespace Engine.React;
 
 public class ReactEngine : IEngine
 {
-    public string PluginId => "React.Official";
-    public string PluginName => "React Engine Official";
-    public int MajorVersion => 0;
-    public int MinorVersion => 1;
-    public int PathVersion => 0;
-    public EngineTarget Target => EngineTarget.React;
+    public string Name => "React Engine Official DEBUG";
 
     private static SourceFile CompileComponent(ComponentModel model, StringBuilder sb, string source)
     {
@@ -121,7 +116,7 @@ public class ReactEngine : IEngine
         return sb.ToString();
     }
 
-    public SourceFile[] CompileUnit(UnitModel unit, bool production)
+    public SourceFile[] CompileUnit(UnitModel unit)
     {
         var sb = new StringBuilder();
         string baseName = Path.GetFileName(unit.FilePath);
