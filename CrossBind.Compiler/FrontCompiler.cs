@@ -12,7 +12,9 @@ public static class FrontCompiler
     {
         FileStream fileStream = File.OpenRead(file);
         var charStream = new AntlrInputStream(fileStream);
-        return Compile(file, charStream);
+        var result = Compile(file, charStream);
+        fileStream.Dispose();
+        return result;
     }
 
     public static Result<UnitModel> CompileUnitSource(string source)
