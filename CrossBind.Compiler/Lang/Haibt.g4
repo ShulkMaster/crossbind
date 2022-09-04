@@ -40,6 +40,7 @@ DOT: '.';
 SEMI: ';';
 COLON: ':';
 EQ: '=';
+QUEST: '?';
 COMPONENT: 'component';
 EXTENDS: 'extends';
 PLUS: '+';
@@ -59,7 +60,7 @@ MATH_OPERATOR: PLUS | MINUS | TIMES | DIV;
 BORDER_STYLE: 'dotted' | 'dashed' | 'solid' | 'double' | NONE | 'hidden';
 ACTION_STYLE: 'disabled' | 'active' | 'hoover' | NONE;
 PRIMIRIVE_TYPE: 'string' | 'number' | 'bool' | Color;
-CONST_VALUE: NUMBER | STRING | BOOLEAN; 
+const_value: NUMBER | STRING | BOOLEAN; 
 
 CANNON_COMP: 'button' | 'select' | 'textbox';
 // must be last to avoid overlapping
@@ -85,7 +86,7 @@ compDeclaration:
     COMPONENT IDENTIFIER (EXTENDS CANNON_COMP)? '{' body '}';
 
 body:
-    (css_statement | variant | script)*
+    (css_statement | variant | script | property)*
 ;
 
 css_statement: 
@@ -124,14 +125,21 @@ script: declaration | assigment | initialization;
 
 declaration: (CONST | LET) IDENTIFIER COLON (PRIMIRIVE_TYPE | IDENTIFIER) SEMI;
 
+property:
+ PROP IDENTIFIER (COLON type_val)? EQ value SEMI # autoInit |
+ PROP IDENTIFIER COLON type_val QUEST? SEMI # declared;
+ 
+value: const_value | IDENTIFIER | exp;
+type_val: PRIMIRIVE_TYPE | IDENTIFIER;
+
 assigment:
     IDENTIFIER EQ IDENTIFIER SEMI # byref |
-    IDENTIFIER EQ CONST_VALUE SEMI # byconst |
+    IDENTIFIER EQ const_value SEMI # byconst |
     IDENTIFIER EQ exp SEMI # byexp;
     
 initialization:
    initializer IDENTIFIER SEMI # initbyref |
-   initializer CONST_VALUE SEMI # initbyconst |
+   initializer const_value SEMI # initbyconst |
    initializer exp SEMI # initbyexp;
 
 initializer: (CONST | LET) IDENTIFIER (COLON (PRIMIRIVE_TYPE | IDENTIFIER))? EQ;
