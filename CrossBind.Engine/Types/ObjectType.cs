@@ -1,6 +1,6 @@
 ﻿namespace CrossBind.Engine.Types;
 
-public record ObjectType(string Name, string FQDM): TypeModel(Name, FQDM)
+public record ObjectType(string Name, string FQDM, bool Nullable): TypeModel(Name, FQDM, Nullable)
 {
     private readonly Dictionary<string, TypeModel> _dic = new();
 

@@ -126,7 +126,7 @@ script: declaration | assigment | initialization;
 declaration: (CONST | LET) IDENTIFIER COLON (PRIMIRIVE_TYPE | IDENTIFIER) SEMI;
 
 property:
- PROP IDENTIFIER (COLON type_val)? EQ value SEMI # autoInit |
+ PROP IDENTIFIER (COLON type_val QUEST?)? EQ value SEMI # autoInit |
  PROP IDENTIFIER COLON type_val QUEST? SEMI # declared;
  
 value: const_value | IDENTIFIER | exp;

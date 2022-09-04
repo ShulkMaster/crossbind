@@ -18,48 +18,48 @@ public class PropertyVisitor: HaibtBaseVisitor<PropModel>
         _scope = scope;
     }
 
-    private TypeModel FromTypeNotation(Type_valContext context)
+    private TypeModel FromTypeNotation(Type_valContext context, bool nullable)
     {
         ITerminalNode? primitive = context.PRIMIRIVE_TYPE();
-        if (primitive is null) return Primitive.String();
+        if (primitive is null) return Primitive.String(false);
         return primitive.Symbol.Text switch
         {
-            "string" => Primitive.String(),
-            "number" => Primitive.Number(),
-            "bool" => Primitive.Bool(),
-            _ => Primitive.String()
+            "string" => Primitive.String(nullable),
+            "number" => Primitive.Number(nullable),
+            "bool" => Primitive.Bool(nullable),
+            _ => Primitive.String(nullable)
         };
     }
 
-    private TypeModel FromConstValue(CONST_VALUEContext value)
+    private TypeModel FromConstValue(Const_valueContext value)
     {
         if (value.NUMBER() is not null)
         {
-            return Primitive.Number();
+            return Primitive.Number(false);
         }
         
         if (value.STRING() is not null)
         {
-            return Primitive.String();
+            return Primitive.String(false);
         }
         
         if (value.BOOLEAN() is not null)
         {
-            return Primitive.Bool();
+            return Primitive.Bool(false);
         }
         
-        return Primitive.String();
+        return Primitive.String(false);
     }
 
     private TypeModel FromIdentifier(string identifier)
     {
         var symbol = _scope.Symbols.FirstOrDefault(s => s.Identifier == identifier);
-        return symbol?.Type ?? Primitive.String();
+        return symbol?.Type ?? Primitive.String(false);
     }
 
     private TypeModel InferType(ValueContext context)
     {
-        CONST_VALUEContext? value = context.cONST_VALUE();
+        Const_valueContext? value = context.const_value();
         if (value is not null)
         {
             return FromConstValue(value);
@@ -71,7 +71,7 @@ public class PropertyVisitor: HaibtBaseVisitor<PropModel>
             return FromIdentifier(identifier.GetText());
         }
 
-        return Primitive.String();
+        return Primitive.String(false);
     }
     
     public override PropModel VisitAutoInit(AutoInitContext context)
@@ -79,8 +79,9 @@ public class PropertyVisitor: HaibtBaseVisitor<PropModel>
         string propName = context.IDENTIFIER().GetText();
         Type_valContext? typeValue = context.type_val();
         ValueContext? value = context.value();
-        TypeModel type = typeValue is not null 
-            ? FromTypeNotation(typeValue)
+        bool nullable = context.QUEST() is not null;
+            TypeModel type = typeValue is not null 
+            ? FromTypeNotation(typeValue, nullable)
             : InferType(value);
         _manager.RegisterType(type);
         SymbolEntry? entry = _scope.Symbols.FirstOrDefault(e => e.Identifier == propName);
