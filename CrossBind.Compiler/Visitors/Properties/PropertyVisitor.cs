@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime.Tree;
+﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Tree;
 using CrossBind.Compiler.Symbol;
 using CrossBind.Compiler.Typing;
 using CrossBind.Engine.BaseModels;
@@ -70,8 +71,27 @@ public class PropertyVisitor: HaibtBaseVisitor<PropModel>
         {
             return FromIdentifier(identifier.GetText());
         }
-
+        
+        //todo expression prop
         return Primitive.String(false);
+    }
+
+    private static PropModel AssignPropValue(ValueContext context, string name, TypeModel type)
+    {
+        Const_valueContext? value = context.const_value();
+        if (value is not null)
+        {
+            return new ConstPropModel(name, type, value.GetText());
+        }
+        
+        ITerminalNode? identifier = context.IDENTIFIER();
+        if (identifier is not null)
+        {
+            return new AssignPropModel(name, type, identifier.GetText());
+        }
+        
+        // todo expression prop
+        return new ConstPropModel(name, type, "null");
     }
     
     public override PropModel VisitAutoInit(AutoInitContext context)
@@ -84,6 +104,23 @@ public class PropertyVisitor: HaibtBaseVisitor<PropModel>
             ? FromTypeNotation(typeValue, nullable)
             : InferType(value);
         _manager.RegisterType(type);
+        RegisterPropType(propName, type, context.IDENTIFIER().Symbol);
+        
+        return AssignPropValue(value, propName, type);
+    }
+
+    public override PropModel VisitDeclared(DeclaredContext context)
+    {
+        string propName = context.IDENTIFIER().GetText();
+        Type_valContext? typeValue = context.type_val();
+        bool nullable = context.QUEST() is not null;
+        TypeModel type = FromTypeNotation(typeValue, nullable);
+        RegisterPropType(propName, type, context.IDENTIFIER().Symbol);
+        return new PropModel(propName, type);
+    }
+
+    private void RegisterPropType(string propName, TypeModel type, IToken symbol)
+    {
         SymbolEntry? entry = _scope.Symbols.FirstOrDefault(e => e.Identifier == propName);
         if (entry is null)
         {
@@ -91,9 +128,8 @@ public class PropertyVisitor: HaibtBaseVisitor<PropModel>
             {
                 Identifier = propName,
             };
-            entry.Usages.Add(context.IDENTIFIER().Symbol);
+            entry.Usages.Add(symbol);
         }
         _scope.Symbols.Add(entry);
-        return new PropModel(propName, type);
     }
 }
