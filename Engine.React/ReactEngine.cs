@@ -4,6 +4,9 @@ using CrossBind.Engine.BaseModels;
 using CrossBind.Engine.ComponentModels;
 using CrossBind.Engine.Generated;
 using CrossBind.Engine.StyleModel;
+using CrossBind.Engine.Types;
+using Engine.React.Component;
+using Engine.React.Generation;
 
 namespace Engine.React;
 
@@ -11,106 +14,88 @@ public class ReactEngine : IEngine
 {
     public string Name => "React Engine Official DEBUG";
 
-    private static SourceFile CompileComponent(ComponentModel model, StringBuilder sb, string source)
+    private static PropModel MakeProp(ComponentVariant variantStyle)
     {
-        sb.Append(DomReactTypes.GetReactImports(model.Extends));
-        (string typeName, string typeDefinition) = DomReactTypes.GetDomType(model.Extends);
-        Console.WriteLine(typeName, typeDefinition);
-        sb.Append(typeDefinition);
-        // todo code that gets every prop in the component
-        sb.Append($"\nexport type {model.Name}Props = {{\n");
-
-        foreach (var variant in model.Body.Variants)
+        string varName = variantStyle.Name;
+        VariantStyle? defaultVar = variantStyle.Styles.FirstOrDefault(s => s.Default);
+        bool isNull = defaultVar is null;
+        var varType = new UnionType(varName, "", !isNull);
+        foreach (string key in variantStyle.GetKeys())
         {
-            sb.Append($"  {variant.Name}?: ");
-            foreach (VariantStyle style in variant.Styles)
-            {
-                sb.Append($"'{style.ValueKey}' |");
-            }
-            sb.Replace('|', ';', sb.Length - 1, 1);
-            sb.Append('\n');
+            var literal = new StringLiteralType(key, $"{varName}.{key}");
+            varType.TypeModels.Add(literal);
         }
 
-        if (typeName != string.Empty)
-        {
-            sb.Append($"}} & {typeName};\n");
-        }
-        else
-        {
-            sb.Append("}\n");
-        }
+        return new ConstPropModel(varName, varType, defaultVar?.ValueKey ?? string.Empty);
+    }
 
-        sb.Append($"\nexport const {model.Name} = (props : {model.Name}Props");
-        string tag = DomReactTypes.GetComponentTag(model.Extends);
-        if (tag == DomReactTypes.ReactInputTag)
+    private static ReactComponent CompileComponent(ComponentModel model)
+    {
+        var props = model.Body.Props;
+        var variantProps = model.Body.Variants.Select(MakeProp);
+        props.AddRange(variantProps);
+        foreach (PropModel propModel in props)
         {
-            tag += " type='text'";
+            Console.WriteLine(propModel.Name);
         }
 
-        ComponentVariant variantM = model.Body.Variants.First();
-        
-        sb.Append($") => {{\n");
-        var x = model.Body.Variants.First();
-        sb.Append($"  const {variantM.Name} = props.{x.Name} || '{x.Styles.First().ValueKey}';\n");
-        sb.Append($"// Todo fill the code\nreturn <{tag} className={{`{model.Name} ${{{variantM.Name}}}`}} {{...props}} />\n}};\n");
-
-        string styles = CompileStyle(model.Body.BaseStyles, model.Name);
-        string vars = CompileVariant(model.Body.Variants.First(), model.Name);
-        return new SourceFile(source, "css")
+        return new ReactComponent
         {
-            SourceCode = $"{styles}\n{vars}",
-            SourceName = model.ModuleId,
+            Name = model.Name,
+            Model = model,
+            Properties = props,
+            ComponentType = ComponentType.Functional
         };
     }
 
-    private static SourceFile CompileModel(BindModel model, StringBuilder sb, string src)
+    private static void CompileComponentStyle(ComponentModel model, StringBuilder sb)
     {
-        switch (model)
+        string prefix = model.Name;
+        var styles = model.Body.BaseStyles;
+        sb.AppendLine($".{prefix} {{");
+        foreach (ComponentStyle style in styles)
         {
-            case ComponentModel cModel:
-            {
-                return CompileComponent(cModel, sb, src);
-            }
+            sb.AppendLine($"{style.Key}: {style.StringValue}");
         }
 
-        return new SourceFile("", "");
-    }
+        sb.AppendLine("}");
 
-    private static string CompileStyle(IEnumerable<ComponentStyle> styles, string baseName)
-    {
-        var sb = new StringBuilder();
-        sb.Append($".{baseName} {{\n");
-        foreach (var style in styles)
+        var variants = model.Body.Variants;
+        foreach (ComponentVariant variant in variants)
         {
-            if (style.Key == "background-color")
+            foreach (VariantStyle style in variant.Styles)
             {
-                sb.AppendFormat("  background-color: {0};\n", style.StringValue);
-                continue;
-            }
-
-            sb.AppendFormat("  {0}", style.StringValue);
-        }
-        sb.Append("}\n");
-        return sb.ToString();
-    }
-
-    private static string CompileVariant(ComponentVariant variant, string baseName)
-    {
-        var sb = new StringBuilder();
-        foreach (var value in variant.Styles)
-        {
-            sb.Append($".{baseName}.{value.ValueKey} {{\n");
-            foreach (var style in value.VariantStyles)
-            {
-                if (style.Key == "background-color")
+                sb.AppendLine($".{prefix} .{style.ValueKey} {{");
+                foreach (ComponentStyle variantStyle in style.VariantStyles)
                 {
-                    sb.AppendFormat("  background-color: {0};\n", style.StringValue);
-                    continue;
+                    sb.AppendLine($"{variantStyle.Key}: {variantStyle.StringValue}");
                 }
-
-                sb.AppendFormat("  {0}", style.StringValue);
+                sb.AppendLine("}");
             }
-            sb.Append("}\n");
+
+            sb.AppendLine();
+        }
+        sb.AppendLine();
+    }
+
+    private static string  CompileStyle(UnitModel unit)
+    {
+        var sb = new StringBuilder();
+        var components = unit.Models;
+        foreach (BindModel component in components)
+        {
+            switch (component.Type)
+            {
+                case ModelType.Component:
+                    CompileComponentStyle((ComponentModel)component, sb);
+                    break;
+                case ModelType.ShareLib:
+                    throw new NotImplementedException("No shared libs implementation");
+                case ModelType.Asset:
+                    throw new NotImplementedException("No assets implementation");
+                default:
+                    throw new ArgumentOutOfRangeException("Type", "Not in range");
+            }
         }
         
         return sb.ToString();
@@ -118,30 +103,40 @@ public class ReactEngine : IEngine
 
     public SourceFile[] CompileUnit(UnitModel unit)
     {
-        var sb = new StringBuilder();
         string baseName = Path.GetFileName(unit.FilePath);
         int dotIndex = baseName.LastIndexOf('.');
         string fileName = baseName[..dotIndex];
-        foreach (var module in unit.Modules)
-        {
-            sb.Append("import { ");
-            sb.AppendJoin(',', module.Simbols);
-            sb.Append(" } from ");
-            sb.Append(module.Path);
-            sb.Append(";\n");
-        }
-
-        sb.Append("import './");
-        sb.Append(fileName);
-        sb.Append(".css';\n\r");
-
+        var module = new ReactModule(unit.FilePath.Replace(Path.PathSeparator,'.'));
+       
         var files = new List<SourceFile>();
-        foreach (var model in unit.Models)
+
+        string styleSource = CompileStyle(unit);
+        var styleSheet = new ImportModel($"./{fileName}.css", Array.Empty<string>());
+        unit.Modules.Add(styleSheet);
+        files.Add(new SourceFile(fileName, "css")
         {
-            var source = CompileModel(model, sb, fileName);
-            files.Add(source);
+            SourceCode = styleSource,
+            SourceName = unit.FilePath
+        });
+        
+        foreach (BindModel model in unit.Models)
+        {
+            switch (model)
+            {
+                case ComponentModel cModel:
+                {
+                    ReactComponent comp = CompileComponent(cModel);
+                    module.Components.Add(comp);
+                    break;
+                }
+            }
         }
 
+        var sb = new StringBuilder();
+        ComponentWriter cw = new(sb);
+        
+        cw.WriteSource(module);
+        
         files.Add(new SourceFile(fileName, "tsx")
         {
             SourceCode = sb.ToString(),

@@ -15,7 +15,7 @@ namespace CrossBind;
 public static class Program
 {
     private static readonly ManualResetEvent QuitEvent = new(false);
-    private static readonly  PluginLoader Loader = new ();
+    private static readonly PluginLoader Loader = new();
     private static CrossConfig _conf = new();
 
     public static int Main(string[] args)
@@ -43,7 +43,12 @@ public static class Program
             Console.Error.WriteLine("Config file must be a JSON file");
             return -1;
         }
-        
+
+        if (configFile == "crossbind.json" && !File.Exists(configFile))
+        {
+            return 0;
+        }
+
         try
         {
             using Stream ss = File.OpenRead(configFile);
@@ -79,19 +84,23 @@ public static class Program
     private static int CompileCommandProxy(Compile command)
     {
         int returnCode = LoadConfig(command.Config);
+        if (!string.IsNullOrWhiteSpace(command.OutputDir))
+        {
+            _conf.OutDir = command.OutputDir;
+        }
         if (returnCode != 0)
         {
             return returnCode;
         }
 
         ICrossPlugin? plugin = Loader.FindEngineWithId(command.PluginId);
-        
+
         if (plugin is null)
         {
             Console.Error.WriteLine($"Unable to load plugin {command.PluginId}");
             return -1;
         }
-        
+
         Console.WriteLine("Plugin loaded: {0} {1}", plugin.Name, plugin.Version);
         JsonNode? opts = null;
         _conf.Options?.TryGetPropertyValue(plugin.PluginId, out opts);
@@ -100,16 +109,17 @@ public static class Program
             Console.WriteLine($"Using options {plugin.PluginId}:");
             Console.WriteLine(opts.ToJsonString());
         }
+
         IEngine engine = plugin.GetEngineInstance(false, opts?.AsObject());
         Directory.CreateDirectory(_conf.OutDir);
         if (!IsFile(command.Source)) return CompileCommand(engine, command.Source);
-        
+
         if (!File.Exists(command.Source))
         {
             Console.Error.WriteLine("File: {0} does not exits", command.Source);
             return -1;
         }
-            
+
         return command.Watch ? Watch(command, engine) : CompileCommand(command, engine);
     }
 
@@ -139,30 +149,29 @@ public static class Program
     {
         int failedUnits = 0;
         _ = FrontCompiler.CompileUnitFile(code).Match(
-                u =>
+            u =>
+            {
+                Console.WriteLine("Unit parsed");
+                var files = engine.CompileUnit(u);
+                foreach (SourceFile file in files)
                 {
-                    Console.WriteLine("Unit parsed");
-                    var files = engine.CompileUnit(u);
-                    foreach (SourceFile file in files)
-                    {
-                        using var fileStream = File.CreateText($"{_conf.OutDir}/{file.FileName}.{file.Extension}");
-                        fileStream.WriteLine(file.SourceCode);
-                    }
-
-                    return Unit.Default;
-                },
-                e =>
-                {
-                    failedUnits++;
-                    Console.WriteLine(e.Message);
-                    return Unit.Default;
+                    using var fileStream = File.CreateText($"{_conf.OutDir}/{file.FileName}.{file.Extension}");
+                    fileStream.WriteLine(file.SourceCode);
                 }
-            );
+
+                return Unit.Default;
+            },
+            e =>
+            {
+                failedUnits++;
+                Console.WriteLine(e.Message);
+                return Unit.Default;
+            }
+        );
 
         if (failedUnits <= 0) return 0;
         Console.WriteLine("Total failed units {0}", failedUnits);
         return -1;
-
     }
 
     private static int CompileCommand(Compile command, IEngine engine)
