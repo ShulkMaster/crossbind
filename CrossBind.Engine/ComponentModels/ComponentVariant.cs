@@ -15,5 +15,6 @@ public class ComponentVariant
     public List<VariantStyle> Styles { get; init; } = new();
     // hoover, active, disabled etc.
     public string Action { get; set; } = string.Empty;
+    public string? DefaultName { get; init; }
     public IEnumerable<string> GetKeys() => Styles.Select(s => s.ValueKey);
 }

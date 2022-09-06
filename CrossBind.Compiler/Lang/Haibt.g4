@@ -112,7 +112,7 @@ cssMeasure : NUMBER CSS_UNIT? ;
     
     
 variant : 
-    Variant IDENTIFIER SEMI #variantDeclaration
+    Variant(QUEST)? IDENTIFIER (EQ IDENTIFIER)? SEMI #variantDeclaration
     | IDENTIFIER variant_style #variantInitialization
     | IDENTIFIER variant_action #variantAction
     ;
