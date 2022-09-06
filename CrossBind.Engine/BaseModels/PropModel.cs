@@ -5,19 +5,19 @@ namespace CrossBind.Engine.BaseModels;
 
 public record PropModel(string Name, TypeModel Type);
 
-public record ConstPropModel(
+public sealed record ConstPropModel(
     string Name,
     TypeModel Type,
     string ConstValue
 ) : PropModel(Name, Type);
 
-public record AssignPropModel(
+public sealed record AssignPropModel(
     string Name,
     TypeModel Type,
     string Identifier
 ) : PropModel(Name, Type);
 
-public record ExpressionPropModel(
+public sealed record ExpressionPropModel(
     string Name,
     TypeModel Type,
     Expression Expression

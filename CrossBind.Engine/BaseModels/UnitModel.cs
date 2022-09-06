@@ -3,6 +3,6 @@
 public record UnitModel(
     string ModuleHash,
     string FilePath,
-    IEnumerable<ImportModel> Modules,
+    List<ImportModel> Modules,
     IEnumerable<BindModel> Models
 );
