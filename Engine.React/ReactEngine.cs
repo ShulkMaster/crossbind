@@ -24,7 +24,7 @@ public class ReactEngine : IEngine
         var varType = new UnionType(varName, "", !isNull);
         foreach (string key in variantStyle.GetKeys())
         {
-            var literal = new StringLiteralType(key, $"{varName}.{key}");
+            var literal = new StringLiteralType($"'{key}'", $"{varName}.{key}");
             varType.TypeModels.Add(literal);
         }
 

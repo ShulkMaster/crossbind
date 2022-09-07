@@ -73,18 +73,33 @@ public class ComponentWriter
         }
     }
 
-    private void WriteProps(IEnumerable<PropModel> props)
+    private void WriteProps(IEnumerable<PropModel> props, string componentName)
     {
         foreach (PropModel prop in props)
         {
             TypeModel type = prop.Type;
-            string nullable = type.Nullable ? "?" : "";
+            string typeNotation = type.Name;
+            if (type is UnionType)
+            {
+                typeNotation = $"{componentName}Props['{prop.Name}']";
+            }
+
             switch (prop)
             {
                 case ConstPropModel cModel:
                 {
-                    _sb.AppendLine(
-                        $"  const {cModel.Name}: {type.Name}{nullable} = p.{cModel.Name} || {cModel.ConstValue};");
+                    bool optional = !string.IsNullOrEmpty(cModel.ConstValue);
+                    string quest = type.Nullable ? "?" : "";
+                    _sb.Append($"  const {cModel.Name}: {typeNotation} = p{quest}.{cModel.Name}");
+                    if (optional)
+                    {
+                        _sb.AppendLine($" || {cModel.ConstValue};");
+                    }
+                    else
+                    {
+                        _sb.Append(";\n");
+                    }
+
                     continue;
                 }
             }
@@ -93,10 +108,10 @@ public class ComponentWriter
 
     private void WriteComponent(ReactComponent component)
     {
-        string name = component.Name;
+        string name = component.Name.Capitalize();
         WriteComponentPropType(component);
         _sb.Append($"export const {name} = (p: {name}Props) => {{\n");
-        WriteProps(component.Properties);
+        WriteProps(component.Properties, name);
         string tag = DomReactTypes.GetComponentTag(component.Model.Extends);
         _sb.AppendLine("// Todo fill the code");
         _sb.Append($"  <{tag} className=");
@@ -117,17 +132,33 @@ public class ComponentWriter
 
     private void WriteComponentPropType(ReactComponent component)
     {
-        string typeName = component.Name
-            .First()
-            .ToString()
-            .ToUpper();
-        typeName += component.Name[1..];
+        string typeName = component.Name.Capitalize();
         _sb.AppendLine($"export type {typeName}Props = {{");
         foreach (PropModel prop in component.Properties)
         {
-            string nullable = prop.Type.Nullable ? "?" : "";
+            bool isOptional = prop.Type.Nullable;
+            if (prop is ConstPropModel constProp)
+            {
+                isOptional = !string.IsNullOrEmpty(constProp.ConstValue);
+            }
+
+            string nullable = isOptional ? "?" : "";
+            if (prop.Type is UnionType union)
+            {
+                _sb.Append($"  {prop.Name}{nullable}:");
+                foreach (TypeModel type in union.TypeModels)
+                {
+                    _sb.Append($" {type.Name} |");
+                }
+
+                _sb.Pop();
+                _sb.AppendLine(";");
+                continue;
+            }
+
             _sb.AppendLine($"  {prop.Name}{nullable}: {prop.Type.Name};");
         }
+
         _sb.AppendLine("}\n");
     }
 }
