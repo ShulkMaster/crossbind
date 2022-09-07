@@ -39,7 +39,7 @@ public class VariantVisitor : HaibtBaseVisitor<ComponentVariant>
         ComponentVariant variant = map[name];
         VariantStyle style = VisitVariantStyle(context.variant_style());
         variant.Styles.Add(style);
-        style.Default = name == variant.DefaultName;
+        style.Default = style.ValueKey == variant.DefaultName;
         return variant;
     }
 

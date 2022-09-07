@@ -5,7 +5,6 @@ using CrossBind.Engine.Types;
 using Engine.React.Component;
 using Engine.React.Extensions;
 using Engine.React.Import;
-using System.Globalization;
 
 namespace Engine.React.Generation;
 
@@ -73,6 +72,23 @@ public class ComponentWriter
         }
     }
 
+    private string GetConstValue(ConstPropModel constProp)
+    {
+        TypeModel type = constProp.Type;
+        if (type is UnionType st)
+        {
+            foreach (TypeModel stTypeModel in st.TypeModels)
+            {
+                if (stTypeModel is StringLiteralType sl && sl.Name == constProp.ConstValue)
+                {
+                    return sl.Value;
+                }
+            }
+        }
+
+        return constProp.ConstValue;
+    }
+
     private void WriteProps(IEnumerable<PropModel> props, string componentName)
     {
         foreach (PropModel prop in props)
@@ -89,11 +105,10 @@ public class ComponentWriter
                 case ConstPropModel cModel:
                 {
                     bool optional = !string.IsNullOrEmpty(cModel.ConstValue);
-                    string quest = type.Nullable ? "?" : "";
-                    _sb.Append($"  const {cModel.Name}: {typeNotation} = p{quest}.{cModel.Name}");
+                    _sb.Append($"  const {cModel.Name}: {typeNotation} = p.{cModel.Name}");
                     if (optional)
                     {
-                        _sb.AppendLine($" || {cModel.ConstValue};");
+                        _sb.AppendLine($" || {GetConstValue(cModel)};");
                     }
                     else
                     {
@@ -148,6 +163,11 @@ public class ComponentWriter
                 _sb.Append($"  {prop.Name}{nullable}:");
                 foreach (TypeModel type in union.TypeModels)
                 {
+                    if (type is StringLiteralType sl)
+                    {
+                        _sb.Append($" {sl.Value} |");
+                        continue;
+                    }
                     _sb.Append($" {type.Name} |");
                 }
 
