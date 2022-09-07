@@ -18,6 +18,6 @@ public class UnitTest1
         var code = engine.CompileUnit(cmu);
         
         // aseert
-        Assert.Equal("import { xd } from 'react';\n", code[1].SourceCode);
+        Assert.Equal("import { xd} from 'react';\nimport React from 'react';\r\nimport './myfile.css';\r\n\r\n", code[1].SourceCode);
     }
 }

@@ -13,10 +13,9 @@ pool:
 
 variables:
   major: 0
-  minor: 1
+  minor: 2
   patch: 0
   prefix: $(major).$(minor).$(patch)
-  lastBuildId: 62
   Configuration: 'Release'
   win: 'win-x64'
   linux: 'linux-x64'
