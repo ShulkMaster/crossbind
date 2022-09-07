@@ -15,7 +15,7 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
         var visitBgColor = new ComponentStyle
         {
             Key = "background-color",
-            StringValue = color,
+            StringValue = $"background-color: {color};",
         };
         return visitBgColor;
     }
@@ -141,7 +141,7 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
     {
         var sb = new StringBuilder("padding: ");
         VisitClock(context.clockRule(), sb);
-        sb.Append(";\n");
+        sb.Append(';');
         return new ComponentStyle
         {
             Key = "padding",

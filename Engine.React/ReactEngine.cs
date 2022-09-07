@@ -6,6 +6,7 @@ using CrossBind.Engine.Generated;
 using CrossBind.Engine.StyleModel;
 using CrossBind.Engine.Types;
 using Engine.React.Component;
+using Engine.React.Extensions;
 using Engine.React.Generation;
 
 namespace Engine.React;
@@ -52,33 +53,40 @@ public class ReactEngine : IEngine
     {
         string prefix = model.Name;
         var styles = model.Body.BaseStyles;
-        sb.AppendLine($".{prefix} {{");
-        foreach (ComponentStyle style in styles)
+        if (styles.Any())
         {
-            sb.AppendLine($"{style.Key}: {style.StringValue}");
-        }
+            sb.AppendLine($".{prefix} {{");
+            foreach (ComponentStyle style in styles)
+            {
+                sb.Append(' ', 2);
+                sb.AppendLine(style.StringValue);
+            }
 
-        sb.AppendLine("}");
+            sb.AppendLine("}");
+        }
 
         var variants = model.Body.Variants;
         foreach (ComponentVariant variant in variants)
         {
             foreach (VariantStyle style in variant.Styles)
             {
-                sb.AppendLine($".{prefix} .{style.ValueKey} {{");
+                sb.AppendLine($"\n.{prefix}.{style.ValueKey} {{");
                 foreach (ComponentStyle variantStyle in style.VariantStyles)
                 {
-                    sb.AppendLine($"{variantStyle.Key}: {variantStyle.StringValue}");
+                    sb.Append(' ', 2);
+                    sb.Append(variantStyle.StringValue);
+                    sb.Append('\n');
                 }
+
+                sb.Pop();
                 sb.AppendLine("}");
             }
 
-            sb.AppendLine();
+            sb.Append('\n');
         }
-        sb.AppendLine();
     }
 
-    private static string  CompileStyle(UnitModel unit)
+    private static string CompileStyle(UnitModel unit)
     {
         var sb = new StringBuilder();
         var components = unit.Models;
@@ -97,7 +105,7 @@ public class ReactEngine : IEngine
                     throw new ArgumentOutOfRangeException("Type", "Not in range");
             }
         }
-        
+
         return sb.ToString();
     }
 
@@ -106,8 +114,8 @@ public class ReactEngine : IEngine
         string baseName = Path.GetFileName(unit.FilePath);
         int dotIndex = baseName.LastIndexOf('.');
         string fileName = baseName[..dotIndex];
-        var module = new ReactModule(unit.FilePath.Replace(Path.PathSeparator,'.'));
-       
+        var module = new ReactModule(unit.FilePath.Replace(Path.PathSeparator, '.'));
+
         var files = new List<SourceFile>();
 
         string styleSource = CompileStyle(unit);
@@ -118,7 +126,7 @@ public class ReactEngine : IEngine
             SourceCode = styleSource,
             SourceName = unit.FilePath
         });
-        
+
         foreach (BindModel model in unit.Models)
         {
             switch (model)
@@ -134,9 +142,9 @@ public class ReactEngine : IEngine
 
         var sb = new StringBuilder();
         ComponentWriter cw = new(sb);
-        
+
         cw.WriteSource(module);
-        
+
         files.Add(new SourceFile(fileName, "tsx")
         {
             SourceCode = sb.ToString(),
