@@ -15,7 +15,7 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
         var visitBgColor = new ComponentStyle
         {
             Key = "background-color",
-            StringValue = $"background-color: {color};",
+            StringValue = $"background-color: {color.ToUpper()};",
         };
         return visitBgColor;
     }

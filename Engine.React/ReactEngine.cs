@@ -8,6 +8,7 @@ using CrossBind.Engine.Types;
 using Engine.React.Component;
 using Engine.React.Extensions;
 using Engine.React.Generation;
+using Engine.React.Import;
 
 namespace Engine.React;
 
@@ -115,12 +116,11 @@ public class ReactEngine : IEngine
         int dotIndex = baseName.LastIndexOf('.');
         string fileName = baseName[..dotIndex];
         var module = new ReactModule(unit.FilePath.Replace(Path.PathSeparator, '.'));
-
+        module.ResolveImports(unit);
         var files = new List<SourceFile>();
 
         string styleSource = CompileStyle(unit);
-        var styleSheet = new ImportModel($"./{fileName}.css", Array.Empty<string>());
-        unit.Modules.Add(styleSheet);
+        module.StyleImports.Add(new StyleImport($"./{fileName}.css"));
         files.Add(new SourceFile(fileName, "css")
         {
             SourceCode = styleSource,

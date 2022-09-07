@@ -3,6 +3,9 @@ using CrossBind.Engine.BaseModels;
 using CrossBind.Engine.ComponentModels;
 using CrossBind.Engine.Types;
 using Engine.React.Component;
+using Engine.React.Extensions;
+using Engine.React.Import;
+using System.Globalization;
 
 namespace Engine.React.Generation;
 
@@ -17,33 +20,56 @@ public class ComponentWriter
 
     public void WriteSource(ReactModule module)
     {
-        var imports = module.Imports.OrderBy(m => m.Simbols);
-        WriteImports(imports);
+        WriteImports(module.NamedImports);
+        WriteImports(module.DefaultImports);
+        WriteImports(module.StyleImports);
+        _sb.AppendLine();
         module.Components.ForEach(WriteComponent);
     }
 
-    private void WriteImports(IEnumerable<ImportModel> imports)
+    private void WriteImports(IEnumerable<NamedImport> imports)
     {
-        foreach (ImportModel import in imports)
+        foreach (NamedImport import in imports)
         {
-            if (import.Path.EndsWith(".css"))
+            _sb.Append("import {");
+
+            foreach (string symbol in import.Symbols)
             {
-                _sb.AppendLine($"import '{import.Path}';");
-                continue;
+                _sb.Append($" {symbol},");
             }
 
-            _sb.Append("import {");
-            if (import.Simbols.Any())
+            _sb.Remove(_sb.Length - 1, 1);
+            _sb.Append($"}} from '{import.ModulePath}';\n");
+        }
+    }
+
+    private void WriteImports(IEnumerable<DefaultImport> imports)
+    {
+        foreach (DefaultImport import in imports)
+        {
+            _sb.Append($"import {import.ModuleName}");
+
+            if (import.Symbols.Any())
             {
-                foreach (string symbol in import.Simbols)
+                _sb.Append(", {");
+                foreach (string symbol in import.Symbols)
                 {
                     _sb.Append($" {symbol},");
                 }
 
-                _sb.Remove(_sb.Length - 1, 1);
+                _sb.Pop();
+                _sb.Append('}');
             }
 
-            _sb.Append($"}} from '{import.Path}';\n");
+            _sb.AppendLine($" from '{import.ModulePath}';");
+        }
+    }
+
+    private void WriteImports(IEnumerable<StyleImport> imports)
+    {
+        foreach (StyleImport import in imports)
+        {
+            _sb.AppendLine($"import '{import.ModulePath}';");
         }
     }
 
@@ -57,7 +83,8 @@ public class ComponentWriter
             {
                 case ConstPropModel cModel:
                 {
-                    _sb.AppendLine($"  const {cModel.Name}: {cModel.Name}{nullable} = p.{cModel.Name} || {cModel.ConstValue};");
+                    _sb.AppendLine(
+                        $"  const {cModel.Name}: {type.Name}{nullable} = p.{cModel.Name} || {cModel.ConstValue};");
                     continue;
                 }
             }
@@ -67,6 +94,7 @@ public class ComponentWriter
     private void WriteComponent(ReactComponent component)
     {
         string name = component.Name;
+        WriteComponentPropType(component);
         _sb.Append($"export const {name} = (p: {name}Props) => {{\n");
         WriteProps(component.Properties);
         string tag = DomReactTypes.GetComponentTag(component.Model.Extends);
@@ -81,9 +109,25 @@ public class ComponentWriter
                 _sb.Append($" ${{{variant.Name}}}");
             }
 
-            _sb.Append("`}}");
+            _sb.Append("`}");
         }
 
-        _sb.AppendLine(" {...props} />;\n};");
+        _sb.AppendLine(" {...p} />;\n};");
+    }
+
+    private void WriteComponentPropType(ReactComponent component)
+    {
+        string typeName = component.Name
+            .First()
+            .ToString()
+            .ToUpper();
+        typeName += component.Name[1..];
+        _sb.AppendLine($"export type {typeName}Props = {{");
+        foreach (PropModel prop in component.Properties)
+        {
+            string nullable = prop.Type.Nullable ? "?" : "";
+            _sb.AppendLine($"  {prop.Name}{nullable}: {prop.Type.Name};");
+        }
+        _sb.AppendLine("}\n");
     }
 }

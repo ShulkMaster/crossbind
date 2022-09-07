@@ -8,7 +8,7 @@ public record Primitive: TypeModel
 
     public static Primitive String(bool nullable)
     {
-        return new Primitive(nameof(String), "CrossBind.String", nullable)
+        return new Primitive(nameof(String).ToLower(), "CrossBind.String", nullable)
         {
             PrimitiveType = Primitives.String,
         };
@@ -16,7 +16,7 @@ public record Primitive: TypeModel
     
     public static Primitive Number(bool nullable)
     {
-        return new Primitive(nameof(Number), "CrossBind.Number", nullable)
+        return new Primitive(nameof(Number).ToLower(), "CrossBind.Number", nullable)
         {
             PrimitiveType = Primitives.Number,
         };
@@ -24,7 +24,7 @@ public record Primitive: TypeModel
     
     public static Primitive Bool(bool nullable)
     {
-        return new Primitive(nameof(Bool), "CrossBind.Bool", nullable)
+        return new Primitive(nameof(Bool).ToLower(), "CrossBind.Bool", nullable)
         {
             PrimitiveType = Primitives.Bool,
         };

@@ -5,6 +5,7 @@ namespace Engine.React.Import;
 public sealed class DefaultImport : ReactImport
 {
     public string ModuleName { get; init; } = string.Empty;
+    public SortedSet<string> Symbols { get; } = new();
 
     public DefaultImport(string path) : base(path)
     {

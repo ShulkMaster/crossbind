@@ -3,11 +3,11 @@
 public class ImportModel
 {
     public readonly string Path;
-    public readonly IEnumerable<string> Simbols;
+    public readonly IEnumerable<string> Symbols;
 
-    public ImportModel(string path, IEnumerable<string> simbols)
+    public ImportModel(string path, IEnumerable<string> symbols)
     {
-        Simbols = simbols;
+        Symbols = symbols;
         Path = path;
     }
 }
