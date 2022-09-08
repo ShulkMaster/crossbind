@@ -126,7 +126,7 @@ public class BasicStylesTest
         HaibtParser parser = BuildParser(code);
         var visitor = new StyleVisitor();
         ComponentStyle result = visitor.Visit(parser.css_statement());
-        Assert.Equal($"padding: {pVal}{unit};\n", result.StringValue);
+        Assert.Equal($"padding: {pVal}{unit};", result.StringValue);
     }
     
     [Theory]

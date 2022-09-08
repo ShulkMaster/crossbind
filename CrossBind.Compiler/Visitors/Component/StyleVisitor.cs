@@ -7,7 +7,7 @@ namespace CrossBind.Compiler.Visitors.Component;
 public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
 {
     public const string BorderRadius = "border-radius";
-    private readonly ColorVisitor _color = new ColorVisitor();
+    private readonly ColorVisitor _color = new ();
 
     public override ComponentStyle VisitBgColor(HaibtParser.BgColorContext context)
     {
@@ -15,7 +15,7 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
         var visitBgColor = new ComponentStyle
         {
             Key = "background-color",
-            StringValue = $"background-color: {color.ToUpper()};",
+            StringValue = $"background-color: {color};",
         };
         return visitBgColor;
     }
@@ -35,7 +35,13 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
                 width = newWith;
             }
         }
-        string? color = _color.Visit(context.color_stm());
+
+        HaibtParser.Color_stmContext? contextColor = context.color_stm();
+        string? color = null;
+        if (contextColor is not null)
+        {
+          color  = _color.Visit(contextColor);
+        }
 
         return new BorderRule
         {

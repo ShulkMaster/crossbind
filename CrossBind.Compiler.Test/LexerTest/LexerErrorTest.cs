@@ -72,27 +72,23 @@ Behaves";
     }
 
     [Theory]
-    [InlineData(InvalidRedHexCode)]
+    [InlineData(LowerRedHexCode)]
     [InlineData(InvalidGreenHexCode)]
-    [InlineData(InvalidHexCode1)]
-    [InlineData(InvalidHexCode2)]
-    [InlineData(InvalidHexCode3)]
-    public void Should_Report_Error_With_LowerCase_HexCodes(string hexCode)
+    [InlineData(MixCaseHexCode1)]
+    [InlineData(LowerCaseHexCode2)]
+    [InlineData(LowerHexCode3)]
+    public void Should_Not_Report_Error_With_LowerCase_HexCodes(string hexCode)
     {
         var listener = new HaibtLexerErrorListener();
         var charStream = new AntlrInputStream(hexCode);
         var lexer = new HaibtLexer(charStream);
         lexer.AddErrorListener(listener);
         lexer.AddErrorListener(_listener);
-        var tokens = lexer.GetAllTokens();
         var errors = listener.GetErrors();
         // Lexer will try to match as much as possible so invalid code as #43544
         // are interpreted as valid Hex #435 follow by '44' token thus creating more
         // than a single token
-        if (tokens.Count == 1)
-        {
-            Assert.Single(errors);
-        }
+        Assert.Empty(errors);
     }
     
     [Theory]

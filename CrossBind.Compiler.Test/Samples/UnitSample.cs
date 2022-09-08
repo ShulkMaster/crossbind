@@ -4,7 +4,7 @@ public static class UnitSample
 {
     public const string BasicUnitSample =
         @"
-from './dimends' import { Padding, Vue };
+from ""./dimends"" import { Padding, Vue };
 
 component ButtonApp extends button {
     backgroundColor : #F0D;
