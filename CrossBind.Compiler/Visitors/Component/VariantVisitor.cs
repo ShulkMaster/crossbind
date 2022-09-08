@@ -16,10 +16,18 @@ public class VariantVisitor : HaibtBaseVisitor<ComponentVariant>
 
     public override ComponentVariant VisitVariantDeclaration(HaibtParser.VariantDeclarationContext context)
     {
-        ITerminalNode? name = context.IDENTIFIER();
+        ITerminalNode[] identifiers = context.IDENTIFIER();
+        ITerminalNode name = identifiers[0];
+        ITerminalNode? defaultNode = null;
+        if (identifiers.Length > 1)
+        {
+            defaultNode = identifiers[1];
+        }
+
         var variant = new ComponentVariant
         {
-            Name = name?.GetText() ?? string.Empty,
+            Name = name.GetText() ?? string.Empty,
+            DefaultName = defaultNode?.GetText()
         };
         map.Add(variant.Name, variant);
         return variant;
@@ -31,7 +39,7 @@ public class VariantVisitor : HaibtBaseVisitor<ComponentVariant>
         ComponentVariant variant = map[name];
         VariantStyle style = VisitVariantStyle(context.variant_style());
         variant.Styles.Add(style);
-
+        style.Default = style.ValueKey == variant.DefaultName;
         return variant;
     }
 
@@ -48,7 +56,7 @@ public class VariantVisitor : HaibtBaseVisitor<ComponentVariant>
             ComponentStyle style = _styler.Visit(statements);
             variant.VariantStyles.Add(style);
         }
+
         return variant;
     }
-    
 }

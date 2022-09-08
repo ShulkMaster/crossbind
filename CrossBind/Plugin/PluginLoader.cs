@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.Loader;
 using CrossBind.Engine;
 
 namespace CrossBind.Plugin;
@@ -6,15 +7,14 @@ namespace CrossBind.Plugin;
 public class PluginLoader
 {
     private const string BasePath = "plugins";
-    private readonly PluginContext _context;
+    private readonly string _context;
 
     public PluginLoader()
     {
         string assemblyDir = AppContext.BaseDirectory;
-        string info = new FileInfo(assemblyDir).DirectoryName ?? BasePath;
-        _context = new PluginContext(info);
+        _context = new FileInfo(assemblyDir).DirectoryName ?? BasePath;
     }
-    
+
     private static IEnumerable<string> GetDllDirs()
     {
         string assemblyDir = AppContext.BaseDirectory;
@@ -22,54 +22,93 @@ public class PluginLoader
         return Directory.EnumerateFiles(Path.Combine(info, BasePath), "*.dll");
     }
 
-    private static void LoadEngine(Assembly assembly, EngineTarget target, out IEngine? engine)
+    private static ICrossPlugin? LoadPlugin(Assembly assembly)
     {
-        var engineType = assembly.GetTypes()
-            .FirstOrDefault(t => typeof(IEngine).IsAssignableFrom(t));
+        Type? pluginType = assembly.GetExportedTypes()
+            .FirstOrDefault(t => typeof(ICrossPlugin).IsAssignableFrom(t));
 
-        if (engineType is null)
+        if (pluginType is null)
         {
-            engine = null;
-            return;
+            return null;
         }
 
-        engine = Activator.CreateInstance(engineType) as IEngine;
-        if (engine?.Target == target)
-        {
-            return;
-        }
-
-        engine = null;
+        return Activator.CreateInstance(pluginType) as ICrossPlugin;
     }
 
-    private Assembly LoadPlugin(string relativePath)
+    private static ICrossPlugin? LoadPluginByTarget(Assembly assembly, string target)
+    {
+        ICrossPlugin? activated = LoadPlugin(assembly);
+        return string.Equals(activated?.Target, target, StringComparison.InvariantCultureIgnoreCase)
+            ? activated
+            : null;
+    }
+
+    private static ICrossPlugin? LoadPluginById(Assembly assembly, string id)
+    {
+        ICrossPlugin? activated = LoadPlugin(assembly);
+        return string.Equals(activated?.PluginId, id, StringComparison.InvariantCultureIgnoreCase)
+            ? activated
+            : null;
+    }
+
+    private static Assembly LoadAssembly(string relativePath, AssemblyLoadContext pContext)
     {
         string absolute = Path.GetFullPath(relativePath);
-        return _context.LoadFromAssemblyPath(absolute);
+        return pContext.LoadFromAssemblyPath(absolute);
     }
 
-    public List<IEngine> FindEnginesForTarget(EngineTarget target)
+    public List<ICrossPlugin> FindEnginesForTarget(string target)
     {
-        var list = new List<IEngine>();
+        var list = new List<ICrossPlugin>();
         var dlls = GetDllDirs();
         foreach (string dll in dlls)
         {
             try
             {
-                var pluginAssembly = LoadPlugin(dll);
-                LoadEngine(pluginAssembly, target, out var e);
-                if (e is not null)
+                var pContext = new PluginContext(_context);
+                Assembly pluginAssembly = LoadAssembly(dll, pContext);
+                ICrossPlugin? plugin = LoadPluginByTarget(pluginAssembly, target);
+                if (plugin is not null)
                 {
-                    list.Add(e);
+                    list.Add(plugin);
                 }
-
+                else
+                {
+                    pContext.Unload();
+                }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.Error.WriteLine(e.Message);
+                Console.Error.WriteLine(ex.Message);
             }
         }
 
         return list;
+    }
+
+    public ICrossPlugin? FindEngineWithId(string id)
+    {
+        var dlls = GetDllDirs();
+        foreach (string dll in dlls)
+        {
+            try
+            {
+                var pContext = new PluginContext(_context);
+                Assembly pluginAssembly = LoadAssembly(dll, pContext);
+                ICrossPlugin? plugin = LoadPluginById(pluginAssembly, id);
+                if (plugin is not null)
+                {
+                    return plugin;
+                }
+
+                pContext.Unload();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+            }
+        }
+
+        return null;
     }
 }

@@ -7,7 +7,7 @@ public class FrontCompilerTest
     [Fact]
     public void Should_Compile_Valid_Basic_Button()
     {
-        var unit = FrontCompiler.CompileUnitFile(UnitSample.BasicUnitSample);
+        var unit = FrontCompiler.CompileUnitSource(UnitSample.BasicUnitSample);
         Assert.True(unit.IsSuccess);
     }
 }

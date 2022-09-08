@@ -13,10 +13,9 @@ pool:
 
 variables:
   major: 0
-  minor: 1
+  minor: 2
   patch: 0
   prefix: $(major).$(minor).$(patch)
-  lastBuildId: 62
   Configuration: 'Release'
   win: 'win-x64'
   linux: 'linux-x64'
@@ -161,7 +160,6 @@ jobs:
             Move-Item -Path .\CrossBind.Engine\bin\$(Configuration)\*.nupkg -Destination $(Build.ArtifactStagingDirectory)\Engine\
             Move-Item -Path .\CrossBind.Compiler\bin\$(Configuration)\*.nupkg -Destination $(Build.ArtifactStagingDirectory)\Engine\
             ls $(Build.ArtifactStagingDirectory)\Engine\
-            cat .\CrossBind.Engine\ReleaseNotes.md
 
       - task: DotNetCoreCLI@2
         displayName: 'Publish CLI & LSP Windows'

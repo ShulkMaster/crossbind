@@ -8,29 +8,30 @@ namespace CrossBind.Compiler;
 
 public static class FrontCompiler
 {
-    public static Result<UnitModel> CompileUnitFile(string filePath)
+    public static Result<UnitModel> CompileUnitFile(string file)
     {
-        bool isPath = File.Exists(filePath);
+        FileStream fileStream = File.OpenRead(file);
+        var charStream = new AntlrInputStream(fileStream);
+        var result = Compile(file, charStream);
+        fileStream.Dispose();
+        return result;
+    }
 
+    public static Result<UnitModel> CompileUnitSource(string source)
+    {
+        var charStream = new AntlrInputStream(source);
+        return Compile("default.hbt", charStream);
+    }
+    
+    private static Result<UnitModel> Compile(string filePath, AntlrInputStream ss)
+    {
         var listener = new HaibtLexerErrorListener();
         var unitVisitor = new UnitVisitor
         {
             FilePath = filePath,
         };
         IDisposable? disposable = null;
-        AntlrInputStream charStream;
-        if (isPath)
-        {
-            FileStream fileStream = File.OpenRead(filePath);
-            charStream = new AntlrInputStream(fileStream);
-            disposable = fileStream;
-        }
-        else
-        {
-            charStream = new AntlrInputStream(filePath);
-        }
-
-        var lexer = new HaibtLexer(charStream);
+        var lexer = new HaibtLexer(ss);
         lexer.AddErrorListener(listener);
         var stream = new CommonTokenStream(lexer);
         var parse = new HaibtParser(stream);

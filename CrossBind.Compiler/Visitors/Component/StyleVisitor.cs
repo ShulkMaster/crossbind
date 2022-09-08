@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using Antlr4.Runtime.Tree;
+using CrossBind.Compiler.Visitors.Style;
 using CrossBind.Engine.StyleModel;
 
 namespace CrossBind.Compiler.Visitors.Component;
@@ -7,18 +7,20 @@ namespace CrossBind.Compiler.Visitors.Component;
 public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
 {
     public const string BorderRadius = "border-radius";
+    private readonly ColorVisitor _color = new ();
 
     public override ComponentStyle VisitBgColor(HaibtParser.BgColorContext context)
     {
+        string color = _color.Visit(context.color_stm());
         var visitBgColor = new ComponentStyle
         {
             Key = "background-color",
-            StringValue = context.HEX_COLOR().GetText(),
+            StringValue = $"background-color: {color};",
         };
         return visitBgColor;
     }
 
-    private static BorderRule VisitBorderRule(HaibtParser.BorderValueContext context)
+    private BorderRule VisitBorderRule(HaibtParser.BorderValueContext context)
     {
         HaibtParser.CssMeasureContext? stroke = context.cssMeasure();
 
@@ -34,9 +36,16 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
             }
         }
 
+        HaibtParser.Color_stmContext? contextColor = context.color_stm();
+        string? color = null;
+        if (contextColor is not null)
+        {
+          color  = _color.Visit(contextColor);
+        }
+
         return new BorderRule
         {
-            Color = context.HEX_COLOR()?.GetText() ?? string.Empty,
+            Color = color ?? string.Empty,
             Stroke = width,
             Unit = unit,
             BorderType = context.BORDER_STYLE().GetText(),
@@ -138,7 +147,7 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
     {
         var sb = new StringBuilder("padding: ");
         VisitClock(context.clockRule(), sb);
-        sb.Append(";\n");
+        sb.Append(';');
         return new ComponentStyle
         {
             Key = "padding",

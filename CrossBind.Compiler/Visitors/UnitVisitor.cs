@@ -12,11 +12,11 @@ public class UnitVisitor: HaibtBaseVisitor<UnitModel>
         var imports = context.importStatement();
         var importVisitor = new ImportVisitor();
         var componentVisitor = new ComponentVisitor();
-        var modules = imports.Select(importVisitor.VisitImportStatement);
+        var modules = imports.Select(importVisitor.VisitImportStatement).ToList();
         var comps = context.compDeclaration();
-        var libs = context.libFile();
+        var cssRules = context.css_rule();
         var components = comps.Select(componentVisitor.VisitCompDeclaration);
-        var models = new BindModel[comps.Length + libs.Length];
+        var models = new BindModel[comps.Length + cssRules.Length];
         int index = 0;
         foreach (var component in components)
         {
