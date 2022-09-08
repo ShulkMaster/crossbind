@@ -160,7 +160,6 @@ jobs:
             Move-Item -Path .\CrossBind.Engine\bin\$(Configuration)\*.nupkg -Destination $(Build.ArtifactStagingDirectory)\Engine\
             Move-Item -Path .\CrossBind.Compiler\bin\$(Configuration)\*.nupkg -Destination $(Build.ArtifactStagingDirectory)\Engine\
             ls $(Build.ArtifactStagingDirectory)\Engine\
-            cat .\CrossBind.Engine\ReleaseNotes.md
 
       - task: DotNetCoreCLI@2
         displayName: 'Publish CLI & LSP Windows'
