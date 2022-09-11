@@ -73,10 +73,6 @@ SingleLineComment: '//' ~[\r\n\u2028\u2029]* -> channel(HIDDEN);
 WhiteSpaces: [\t\u000B\u000C\u0020\u00A0]+ -> channel(HIDDEN);
 LineTerminator: [\r\n\u2028\u2029] -> channel(HIDDEN);
 
-IDENTIFIER: IdentifierStart VALID_FOLLOW*;
-IdentifierStart:  [a-zA-Z] | [$_];
-VALID_FOLLOW: IdentifierStart | Digit;
-
 
 // html tags declarations
 mode TAG;
@@ -143,8 +139,6 @@ fragment TagNameChar:
     |   '\u0300'..'\u036F'
     |   '\u203F'..'\u2040'
     ;
-  
-fragment Digit: [0-9];
 
 fragment DoubleStringCharacter
     : ~["\\]

@@ -30,15 +30,15 @@ body:
 ;
 
 css_statement: 
-      (BackgroundColor ':' color_stm SemiColon) #bgColor
-    |  Border ':' borderValue #inlineBorder
-    | ( Border ':' '{' borderValue borderValue? borderValue? borderValue? '}') #compoundBorder
-    | ZINDEX ':' DecimalLiteral SemiColon #zIndex
-    | BORDER_RADIUS ':' cssMeasure SemiColon #borderRadius
-    | Margin ':' clockRule SemiColon #margin
-    | Padding ':' clockRule SemiColon #padding
-    | Width ':' cssMeasure SemiColon #width
-    | Height ':' cssMeasure SemiColon #height
+      BackgroundColor ':' color_stm SemiColon #bgColor
+    |  Border Colon borderValue #inlineBorder
+    |  Border Colon OpenBrace borderValue borderValue? borderValue? borderValue? CloseBrace #compoundBorder
+    | ZINDEX Colon DecimalLiteral SemiColon #zIndex
+    | BORDER_RADIUS Colon cssMeasure SemiColon #borderRadius
+    | Margin Colon clockRule SemiColon #margin
+    | Padding Colon clockRule SemiColon #padding
+    | Width Colon cssMeasure SemiColon #width
+    | Height Colon cssMeasure SemiColon #height
     ;
 
 borderValue : cssMeasure? BORDER_STYLE color_stm? SemiColon;
@@ -57,9 +57,9 @@ variant :
     | IDENTIFIER variant_action #variantAction
     ;
     
-variant_style : IDENTIFIER '{' css_statement* '}';
+variant_style : IDENTIFIER OpenBrace css_statement* CloseBrace;
 
-variant_action : IDENTIFIER ACTION_STYLE '{' css_statement* '}';
+variant_action : IDENTIFIER ACTION_STYLE OpenBrace css_statement* CloseBrace;
 
 script: declaration | assigment | initialization;
 

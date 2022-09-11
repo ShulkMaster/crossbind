@@ -23,3 +23,9 @@ BORDER_RADIUS : 'borderRadius' | 'border-radius';
 
 BORDER_STYLE: 'dotted' | 'dashed' | 'solid' | 'double' | None | 'hidden';
 ACTION_STYLE: 'disabled' | 'active' | 'hoover' | None;
+
+IDENTIFIER: IdentifierStart VALID_FOLLOW*;
+IdentifierStart:  [a-zA-Z] | [$_];
+VALID_FOLLOW: IdentifierStart | Digit;
+
+fragment Digit: [0-9];
