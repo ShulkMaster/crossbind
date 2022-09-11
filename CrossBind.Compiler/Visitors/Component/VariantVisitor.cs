@@ -1,4 +1,5 @@
 ﻿using Antlr4.Runtime.Tree;
+using CrossBind.Compiler.Parser;
 using CrossBind.Engine.ComponentModels;
 using CrossBind.Engine.StyleModel;
 
@@ -14,7 +15,7 @@ public class VariantVisitor : HaibtBaseVisitor<ComponentVariant>
         _styler = styler;
     }
 
-    public override ComponentVariant VisitVariantDeclaration(HaibtParser.VariantDeclarationContext context)
+    public override ComponentVariant VisitVariantDeclaration(Haibt.VariantDeclarationContext context)
     {
         ITerminalNode[] identifiers = context.IDENTIFIER();
         ITerminalNode name = identifiers[0];
@@ -33,7 +34,7 @@ public class VariantVisitor : HaibtBaseVisitor<ComponentVariant>
         return variant;
     }
 
-    public override ComponentVariant VisitVariantInitialization(HaibtParser.VariantInitializationContext context)
+    public override ComponentVariant VisitVariantInitialization(Haibt.VariantInitializationContext context)
     {
         string name = context.IDENTIFIER()?.GetText() ?? string.Empty;
         ComponentVariant variant = map[name];
@@ -43,7 +44,7 @@ public class VariantVisitor : HaibtBaseVisitor<ComponentVariant>
         return variant;
     }
 
-    private VariantStyle VisitVariantStyle(HaibtParser.Variant_styleContext context)
+    private VariantStyle VisitVariantStyle(Haibt.Variant_styleContext context)
     {
         string name = context.IDENTIFIER().GetText() ?? string.Empty;
         var variant = new VariantStyle
@@ -51,7 +52,7 @@ public class VariantVisitor : HaibtBaseVisitor<ComponentVariant>
             ValueKey = name,
         };
 
-        foreach (HaibtParser.Css_statementContext statements in context.css_statement())
+        foreach (Haibt.Css_statementContext statements in context.css_statement())
         {
             ComponentStyle style = _styler.Visit(statements);
             variant.VariantStyles.Add(style);

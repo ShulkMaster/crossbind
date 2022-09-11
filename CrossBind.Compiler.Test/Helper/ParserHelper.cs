@@ -1,14 +1,15 @@
 ﻿using Antlr4.Runtime;
+using CrossBind.Compiler.Parser;
 
 namespace CrossBind.Compiler.Test.Helper;
 
 public class ParserHelper
 {
-    public static HaibtParser BuildParser(string code)
+    public static Haibt BuildParser(string code)
     {
         var charStream = new AntlrInputStream(code);
         var lexer = new HaibtLexer(charStream);
         var stream = new CommonTokenStream(lexer);
-        return new HaibtParser(stream);
+        return new Haibt(stream);
     }
 }

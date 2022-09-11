@@ -53,7 +53,7 @@ StringLiteral: '"' DoubleStringCharacter* '"';
 Event: 'event';
 Prop: 'prop';
 Import: 'import';
-Type: 'type';
+TypeWord: 'type';
 Const: 'const';
 Let: 'let';
 From: 'from';

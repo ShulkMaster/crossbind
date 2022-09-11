@@ -1,4 +1,5 @@
-﻿using CrossBind.Compiler.Symbol;
+﻿using CrossBind.Compiler.Parser;
+using CrossBind.Compiler.Symbol;
 using CrossBind.Compiler.Typing;
 using CrossBind.Compiler.Visitors.Properties;
 using CrossBind.Engine.BaseModels;
@@ -9,7 +10,7 @@ namespace CrossBind.Compiler.Visitors.Component;
 public class BodyVisitor : HaibtBaseVisitor<ComponentBody>
 {
     private readonly TypeManager manager = new();
-    public override ComponentBody VisitBody(HaibtParser.BodyContext context)
+    public override ComponentBody VisitBody(Haibt.BodyContext context)
     {
         var styleVisitor = new StyleVisitor();
         var variantVisitor = new VariantVisitor(styleVisitor);
@@ -20,13 +21,13 @@ public class BodyVisitor : HaibtBaseVisitor<ComponentBody>
             body.BaseStyles.Add(styleVisitor.Visit(cssRule));
         }
 
-        foreach (HaibtParser.PropertyContext propertyContext in context.property())
+        foreach (Haibt.PropertyContext propertyContext in context.property())
         {
             PropModel prop = propertyVisitor.Visit(propertyContext);
             body.Props.Add(prop);
         }
 
-        foreach (HaibtParser.VariantContext? variant in context.variant())
+        foreach (Haibt.VariantContext? variant in context.variant())
         {
             variantVisitor.Visit(variant);
         }

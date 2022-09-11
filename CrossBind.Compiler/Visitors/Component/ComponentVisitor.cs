@@ -1,26 +1,15 @@
-﻿using CrossBind.Engine.ComponentModels;
+﻿using CrossBind.Compiler.Parser;
+using CrossBind.Engine.ComponentModels;
 
 namespace CrossBind.Compiler.Visitors.Component;
 
 public class ComponentVisitor: HaibtBaseVisitor<ComponentModel>
 {
-    private static Extendable ToExtendable(string? extend)
-    {
-        return extend switch
-        {
-            "button" => Extendable.Button,
-            "select" => Extendable.Select,
-            "textbox" => Extendable.TextBox,
-            _ => Extendable.Component,
-        };
-    }
 
-
-    public override ComponentModel VisitCompDeclaration(HaibtParser.CompDeclarationContext context)
+    public override ComponentModel VisitCompDeclaration(Haibt.CompDeclarationContext context)
     {
-        string? extends = context.CANNON_COMP().GetText();
-        var body = new BodyVisitor().VisitBody(context.body());
-        var model = new ComponentModel(ToExtendable(extends))
+        ComponentBody? body = new BodyVisitor().VisitBody(context.body());
+        var model = new ComponentModel
         {
             Name = context.IDENTIFIER().GetText(),
             Body = body,

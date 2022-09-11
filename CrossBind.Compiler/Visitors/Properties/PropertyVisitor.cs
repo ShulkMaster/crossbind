@@ -1,14 +1,15 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
+using CrossBind.Compiler.Parser;
 using CrossBind.Compiler.Symbol;
 using CrossBind.Compiler.Typing;
 using CrossBind.Engine.BaseModels;
 using CrossBind.Engine.Types;
-using static HaibtParser;
+using static CrossBind.Compiler.Parser.Haibt;
 
 namespace CrossBind.Compiler.Visitors.Properties;
 
-public class PropertyVisitor: HaibtBaseVisitor<PropModel>
+public class PropertyVisitor : HaibtBaseVisitor<PropModel>
 {
     private readonly TypeManager _manager;
     private readonly SymbolTable _scope;
@@ -34,21 +35,21 @@ public class PropertyVisitor: HaibtBaseVisitor<PropModel>
 
     private TypeModel FromConstValue(Const_valueContext value)
     {
-        if (value.NUMBER() is not null)
+        if (value.DecimalLiteral() is not null)
         {
             return Primitive.Number(false);
         }
-        
-        if (value.STRING() is not null)
+
+        if (value.StringLiteral() is not null)
         {
             return Primitive.String(false);
         }
-        
-        if (value.BOOLEAN() is not null)
+
+        if (value.BooleanLiteral() is not null)
         {
             return Primitive.Bool(false);
         }
-        
+
         return Primitive.String(false);
     }
 
@@ -71,7 +72,7 @@ public class PropertyVisitor: HaibtBaseVisitor<PropModel>
         {
             return FromIdentifier(identifier.GetText());
         }
-        
+
         //todo expression prop
         return Primitive.String(false);
     }
@@ -83,29 +84,29 @@ public class PropertyVisitor: HaibtBaseVisitor<PropModel>
         {
             return new ConstPropModel(name, type, value.GetText());
         }
-        
+
         ITerminalNode? identifier = context.IDENTIFIER();
         if (identifier is not null)
         {
             return new AssignPropModel(name, type, identifier.GetText());
         }
-        
+
         // todo expression prop
         return new ConstPropModel(name, type, "null");
     }
-    
+
     public override PropModel VisitAutoInit(AutoInitContext context)
     {
         string propName = context.IDENTIFIER().GetText();
         Type_valContext? typeValue = context.type_val();
         ValueContext? value = context.value();
-        bool nullable = context.QUEST() is not null;
-            TypeModel type = typeValue is not null 
+        bool nullable = context.QuestionMark() is not null;
+        TypeModel type = typeValue is not null
             ? FromTypeNotation(typeValue, nullable)
             : InferType(value);
         _manager.RegisterType(type);
         RegisterPropType(propName, type, context.IDENTIFIER().Symbol);
-        
+
         return AssignPropValue(value, propName, type);
     }
 
@@ -113,7 +114,7 @@ public class PropertyVisitor: HaibtBaseVisitor<PropModel>
     {
         string propName = context.IDENTIFIER().GetText();
         Type_valContext? typeValue = context.type_val();
-        bool nullable = context.QUEST() is not null;
+        bool nullable = context.QuestionMark() is not null;
         TypeModel type = FromTypeNotation(typeValue, nullable);
         RegisterPropType(propName, type, context.IDENTIFIER().Symbol);
         return new PropModel(propName, type);
@@ -130,6 +131,7 @@ public class PropertyVisitor: HaibtBaseVisitor<PropModel>
             };
             entry.Usages.Add(symbol);
         }
+
         _scope.Symbols.Add(entry);
     }
 }

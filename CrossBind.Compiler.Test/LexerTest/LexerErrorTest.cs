@@ -1,5 +1,6 @@
 ﻿using Antlr4.Runtime;
 using CrossBind.Compiler.Error;
+using CrossBind.Compiler.Parser;
 using static CrossBind.Compiler.Test.Samples.ButtonSample;
 using static CrossBind.Compiler.Test.Samples.HexSample;
 using Xunit.Abstractions;
