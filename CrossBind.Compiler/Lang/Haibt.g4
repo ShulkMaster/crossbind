@@ -1,70 +1,10 @@
-grammar Haibt;
+parser grammar Haibt;
 
-fragment DIGIT : [0-9] ;
-fragment LOWERCASE  : [a-z] ;
-fragment UPPERCASE  : [A-Z] ;
-fragment HEX  : [0-9A-Fa-f] ;
+options {
+    tokenVocab=HaibtLexer;
+}
 
-NUMBER: DIGIT+ ([.,_] DIGIT+)? ;
-VALID_START: LOWERCASE | UPPERCASE | '_';
-VALID_FOLLOW: VALID_START | DIGIT;
-
-// Keywords
-EVENT: 'event';
-PROP: 'prop';
-TRUE: 'true';
-FALSE: 'false';
-IMPORT: 'import';
-TYPE: 'type';
-CONST: 'const';
-LET: 'let';
-FROM: 'from';
-
-// CSS Rule properties
-BackgroundColor : 'backgroundColor' | 'background-color';
-Border : 'border';
-Padding: 'padding';
-Margin: 'margin';
-Color: 'color';
-Height: 'height';
-Width: 'width';
-FontSize: 'fontSize' | 'font-size';
-Cursor : 'cursor';
-Display: 'display';
-ZINDEX: 'zIndex' | 'z-index';
-BORDER_RADIUS : 'borderRadius';
-
-WhiteSpaces: [\t\u000B\u000C\u0020\u00A0]+ -> channel(HIDDEN);
-LineTerminator: [\r\n\u2028\u2029] -> channel(HIDDEN);
-DOT: '.';
-SEMI: ';';
-COLON: ':';
-EQ: '=';
-QUEST: '?';
-COMPONENT: 'component';
-EXTENDS: 'extends';
-PLUS: '+';
-MINUS: '-';
-TIMES: '*';
-DIV: '/';
-DOUBLEQ: '"';
-STRING: DOUBLEQ .*? DOUBLEQ;
-Variant: 'variant';
-HEX_COLOR: '#' (HEX HEX HEX HEX HEX HEX| HEX HEX HEX);
-CSS_UNIT: 'px' | 'em' | 'rem';
-SING: PLUS | MINUS;
-NONE: 'none';
-SHADES: '0' | '1' | '2' | '3' | '4' | '5';
-BOOLEAN: TRUE | FALSE;
-MATH_OPERATOR: PLUS | MINUS | TIMES | DIV;
-BORDER_STYLE: 'dotted' | 'dashed' | 'solid' | 'double' | NONE | 'hidden';
-ACTION_STYLE: 'disabled' | 'active' | 'hoover' | NONE;
-PRIMIRIVE_TYPE: 'string' | 'number' | 'bool' | Color;
-const_value: NUMBER | STRING | BOOLEAN; 
-
-CANNON_COMP: 'button' | 'select' | 'textbox';
-// must be last to avoid overlapping
-IDENTIFIER: VALID_START + VALID_FOLLOW*;
+const_value: StringLiteral | DecimalLiteral | BooleanLiteral; 
 
 translationUnit:
     importStatement*
@@ -72,7 +12,7 @@ translationUnit:
     EOF
     ;
     
-importStatement: FROM STRING IMPORT '{' IDENTIFIER (',' IDENTIFIER)* '}' SEMI;
+importStatement: From StringLiteral Import '{' IDENTIFIER (',' IDENTIFIER)* '}' SemiColon;
 
 css_rule: 
     complex_rule |
@@ -83,36 +23,36 @@ simple_rule: DOT IDENTIFIER '{' css_statement* '}';
 complex_rule: DOT IDENTIFIER (DOT IDENTIFIER)+ '{' css_statement* '}';
 
 compDeclaration: 
-    COMPONENT IDENTIFIER (EXTENDS CANNON_COMP)? '{' body '}';
+    COMPONENT IDENTIFIER '{' body '}';
 
 body:
     (css_statement | variant | script | property)*
 ;
 
 css_statement: 
-      (BackgroundColor ':' color_stm SEMI) #bgColor
+      (BackgroundColor ':' color_stm SemiColon) #bgColor
     |  Border ':' borderValue #inlineBorder
     | ( Border ':' '{' borderValue borderValue? borderValue? borderValue? '}') #compoundBorder
-    | ZINDEX ':' NUMBER SEMI #zIndex
-    | BORDER_RADIUS ':' cssMeasure SEMI #borderRadius
-    | Margin ':' clockRule SEMI #margin
-    | Padding ':' clockRule SEMI #padding
-    | Width ':' cssMeasure SEMI #width
-    | Height ':' cssMeasure SEMI #height
+    | ZINDEX ':' DecimalLiteral SemiColon #zIndex
+    | BORDER_RADIUS ':' cssMeasure SemiColon #borderRadius
+    | Margin ':' clockRule SemiColon #margin
+    | Padding ':' clockRule SemiColon #padding
+    | Width ':' cssMeasure SemiColon #width
+    | Height ':' cssMeasure SemiColon #height
     ;
 
-borderValue : cssMeasure? BORDER_STYLE color_stm? SEMI;
+borderValue : cssMeasure? BORDER_STYLE color_stm? SemiColon;
 
 color_stm:
-    HEX_COLOR ('['SING? SHADES ']')? # consColor |
-    IDENTIFIER ('['SING? SHADES ']')? # refColor;  
+    HEX_COLOR ('['Sing? SHADES ']')? # consColor |
+    IDENTIFIER ('['Sing? SHADES ']')? # refColor;  
 
 clockRule : cssMeasure cssMeasure? cssMeasure? cssMeasure?;
-cssMeasure : NUMBER CSS_UNIT? ;
+cssMeasure : DecimalLiteral CSS_UNIT? ;
     
     
 variant : 
-    Variant(QUEST)? IDENTIFIER (EQ IDENTIFIER)? SEMI #variantDeclaration
+    Variant(QuestionMark)? IDENTIFIER (Assign IDENTIFIER)? SemiColon #variantDeclaration
     | IDENTIFIER variant_style #variantInitialization
     | IDENTIFIER variant_action #variantAction
     ;
@@ -123,25 +63,25 @@ variant_action : IDENTIFIER ACTION_STYLE '{' css_statement* '}';
 
 script: declaration | assigment | initialization;
 
-declaration: (CONST | LET) IDENTIFIER COLON (PRIMIRIVE_TYPE | IDENTIFIER) SEMI;
+declaration: (Const | Let) IDENTIFIER Colon (PRIMIRIVE_TYPE | IDENTIFIER) SemiColon;
 
 property:
- PROP IDENTIFIER (COLON type_val QUEST?)? EQ value SEMI # autoInit |
- PROP IDENTIFIER COLON type_val QUEST? SEMI # declared;
+ Prop IDENTIFIER (Colon type_val QuestionMark?)? Assign value SemiColon # autoInit |
+ Prop IDENTIFIER Colon type_val QuestionMark? SemiColon # declared;
  
 value: const_value | IDENTIFIER | exp;
 type_val: PRIMIRIVE_TYPE | IDENTIFIER;
 
 assigment:
-    IDENTIFIER EQ IDENTIFIER SEMI # byref |
-    IDENTIFIER EQ const_value SEMI # byconst |
-    IDENTIFIER EQ exp SEMI # byexp;
+    IDENTIFIER Assign IDENTIFIER SemiColon # byref |
+    IDENTIFIER Assign const_value SemiColon # byconst |
+    IDENTIFIER Assign exp SemiColon # byexp;
     
 initialization:
-   initializer IDENTIFIER SEMI # initbyref |
-   initializer const_value SEMI # initbyconst |
-   initializer exp SEMI # initbyexp;
+   initializer IDENTIFIER SemiColon # initbyref |
+   initializer const_value SemiColon # initbyconst |
+   initializer exp SemiColon # initbyexp;
 
-initializer: (CONST | LET) IDENTIFIER (COLON (PRIMIRIVE_TYPE | IDENTIFIER))? EQ;
+initializer: (Const | Let) IDENTIFIER (Colon (PRIMIRIVE_TYPE | IDENTIFIER))? Assign;
     
-exp: NUMBER MATH_OPERATOR NUMBER SEMI;
+exp: DecimalLiteral Plus DecimalLiteral SemiColon;

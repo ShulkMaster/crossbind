@@ -8,3 +8,5 @@ code
 .antlr
 docfx
 singulinkfx
+*.interp
+*.tokens
