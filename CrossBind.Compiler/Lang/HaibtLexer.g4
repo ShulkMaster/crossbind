@@ -14,11 +14,13 @@ Assign: '=';
 QuestionMark: '?';
 Colon: ':';
 DOT: '.';
-// Ellipsis: '...';
+Ellipsis: '...';
 
 // operators
+PlusPlus:                       '++';
+MinusMinus:                     '--';
 Plus: '+';
-Minus: '-';
+
 Not: '!';
 Multiply: '*';
 Divide: '/';
@@ -30,6 +32,8 @@ LessThanEquals:                 '<=';
 GreaterThanEquals:              '>=';
 Equals_:                        '==';
 NotEquals:                      '!=';
+IdentityEquals:                 '===';
+IdentityNotEquals:              '!==';
 And: '&&' | 'and';
 Or: '||' | 'or';
 PlusAssign:                     '+=';
@@ -48,6 +52,7 @@ DecimalLiteral:                 DecimalIntegerLiteral DOT [0-9] [0-9_]* Exponent
               
 StringLiteral: '"' DoubleStringCharacter* '"';
 
+BackTick:  '`' -> pushMode(TEMPLATE);
 
 // Keywords
 Event: 'event';
@@ -73,6 +78,11 @@ SingleLineComment: '//' ~[\r\n\u2028\u2029]* -> channel(HIDDEN);
 WhiteSpaces: [\t\u000B\u000C\u0020\u00A0]+ -> channel(HIDDEN);
 LineTerminator: [\r\n\u2028\u2029] -> channel(HIDDEN);
 
+mode TEMPLATE;
+
+BackTickInside:                 '`' -> type(BackTick), popMode;
+TemplateStringStartExpression:  '${' -> pushMode(DEFAULT_MODE);
+TemplateStringAtom:             ~[`];
 
 // html tags declarations
 mode TAG;
@@ -98,6 +108,12 @@ Attribute
     | AttributeChar
     | HexChars
     | DecChars
+    ;
+    
+mode ATTVALUE;
+
+TagEquals
+    : Assign -> pushMode(ATTVALUE)
     ;
     
 fragment AttributeChar

@@ -26,7 +26,7 @@ compDeclaration:
     COMPONENT IDENTIFIER '{' body '}';
 
 body:
-    (css_statement | variant | script | property)*
+    (css_statement | variant | script | property)* markup?
 ;
 
 css_statement: 
@@ -69,19 +69,77 @@ property:
  Prop IDENTIFIER (Colon type_val QuestionMark?)? Assign value SemiColon # autoInit |
  Prop IDENTIFIER Colon type_val QuestionMark? SemiColon # declared;
  
-value: const_value | IDENTIFIER | exp;
+value: const_value | IDENTIFIER | singleExpression;
 type_val: PRIMIRIVE_TYPE | IDENTIFIER;
 
 assigment:
     IDENTIFIER Assign IDENTIFIER SemiColon # byref |
     IDENTIFIER Assign const_value SemiColon # byconst |
-    IDENTIFIER Assign exp SemiColon # byexp;
+    IDENTIFIER Assign singleExpression SemiColon # byexp;
     
 initialization:
    initializer IDENTIFIER SemiColon # initbyref |
    initializer const_value SemiColon # initbyconst |
-   initializer exp SemiColon # initbyexp;
+   initializer singleExpression SemiColon # initbyexp;
 
 initializer: (Const | Let) IDENTIFIER (Colon (PRIMIRIVE_TYPE | IDENTIFIER))? Assign;
     
-exp: DecimalLiteral Plus DecimalLiteral SemiColon;
+expressionSequence
+    : Ellipsis? singleExpression (',' Ellipsis? singleExpression)*
+    ;
+ 
+singleExpression
+    : singleExpression PlusPlus # PostIncrementExpression
+    | singleExpression MinusMinus # PostDecreaseExpression
+    | '!' singleExpression # NotExpression
+    | singleExpression ('*' | '/' | '%') singleExpression                   # MultiplicativeExpression
+    | singleExpression ('+' | '-') singleExpression                         # AdditiveExpression
+    | singleExpression ('==' | '!=' | '===' | '!==') singleExpression # EqualityExpression
+    | singleExpression And singleExpression  # LogicalAndExpression
+    | singleExpression Or singleExpression # LogicalOrExpression
+    | literal # LiteralExpression
+    | htmlElement # HtmlElementExpression
+    | '(' expressionSequence ')' # ParenthesizedExpression
+    ;
+
+markup: htmlElement+;
+
+htmlElement
+    : '<' IDENTIFIER htmlAttribute* '>' htmlContent '<' '/' IDENTIFIER '>' #htmlChildren
+    | '<' IDENTIFIER htmlAttribute* '/' '>' #htmlOptional
+    | '<' IDENTIFIER htmlAttribute* '>' #htmlSingle
+    ;
+    
+htmlContent
+    : htmlChardata? ((htmlElement | objectExpressionSequence) htmlChardata?)*
+    ;
+    
+htmlAttribute 
+    : IDENTIFIER Assign htmlAttributeValue
+    | IDENTIFIER;
+
+htmlChardata
+    : ~('<'|'{')+
+    ;
+    
+htmlAttributeValue
+    : AttributeValue
+    | StringLiteral
+    | objectExpressionSequence
+    ;
+
+objectExpressionSequence
+    : '{' expressionSequence? '}'
+    ;
+
+literal
+    : NullLiteral
+    | BooleanLiteral
+    | StringLiteral
+    | numericLiteral
+    ;
+
+numericLiteral
+    : DecimalLiteral
+    ;
+
