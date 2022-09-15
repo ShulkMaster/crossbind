@@ -1,5 +1,6 @@
 ﻿using Antlr4.Runtime;
 using CrossBind.Compiler.Error;
+using CrossBind.Compiler.Parser;
 using CrossBind.Compiler.Visitors;
 using CrossBind.Engine.BaseModels;
 using LanguageExt.Common;
@@ -34,9 +35,9 @@ public static class FrontCompiler
         var lexer = new HaibtLexer(ss);
         lexer.AddErrorListener(listener);
         var stream = new CommonTokenStream(lexer);
-        var parse = new HaibtParser(stream);
+        var parse = new Haibt(stream);
         parse.AddErrorListener(new ErrorLister());
-        HaibtParser.TranslationUnitContext? parseTree = parse.translationUnit();
+        Haibt.TranslationUnitContext? parseTree = parse.translationUnit();
         disposable?.Dispose();
         if (parse.NumberOfSyntaxErrors > 0 || listener.GetErrors().Any())
         {

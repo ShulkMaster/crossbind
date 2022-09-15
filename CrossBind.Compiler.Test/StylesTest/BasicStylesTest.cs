@@ -1,5 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Antlr4.Runtime;
+using CrossBind.Compiler.Parser;
+using CrossBind.Compiler.Test.Helper;
 using CrossBind.Compiler.Visitors.Component;
 using CrossBind.Engine.StyleModel;
 
@@ -11,14 +13,6 @@ public class BasicStylesTest
     private const string Rem = "rem";
     private const string Px = "px";
 
-    private static HaibtParser BuildParser(string code)
-    {
-        var charStream = new AntlrInputStream(code);
-        var lexer = new HaibtLexer(charStream);
-        var stream = new CommonTokenStream(lexer);
-        return new HaibtParser(stream);
-    }
-    
     [Theory]
     [InlineData("zIndex : 5;")]
     [InlineData("zIndex:5;")]
@@ -27,7 +21,7 @@ public class BasicStylesTest
     [InlineData(" zIndex:5;\n\r")]
     public void Should_Parse_Z_Index(string code)
     {
-        HaibtParser parser = BuildParser(code);
+        Haibt parser = ParserHelper.BuildParser(code);
         var visitor = new StyleVisitor();
         ComponentStyle result = visitor.Visit(parser.css_statement());
         Assert.Equal("z-index: 5;\n", result.StringValue);
@@ -41,7 +35,7 @@ public class BasicStylesTest
     [InlineData(" width:5.75em;\n\r", Em, 5.75f)]
     public void Should_Parse_Width(string code, string unit, float wVal)
     {
-        HaibtParser parser = BuildParser(code);
+        Haibt parser = ParserHelper.BuildParser(code);
         var visitor = new StyleVisitor();
         ComponentStyle result = visitor.Visit(parser.css_statement());
         Assert.Equal($"width: {wVal}{unit};\n", result.StringValue);
@@ -56,7 +50,7 @@ public class BasicStylesTest
     [InlineData(" height:5.958rem;\n\r", Rem, 5.958f)]
     public void Should_Parse_Height(string code, string unit, float wVal)
     {
-        HaibtParser parser = BuildParser(code);
+        Haibt parser = ParserHelper.BuildParser(code);
         var visitor = new StyleVisitor();
         ComponentStyle result = visitor.Visit(parser.css_statement());
         Assert.Equal($"height: {wVal}{unit};\n", result.StringValue);
@@ -71,7 +65,7 @@ public class BasicStylesTest
     [InlineData(" borderRadius:5.958rem;\n\r", Rem, 5.958f)]
     public void Should_Parse_BorderRadius(string code, string unit, float rVal)
     {
-        HaibtParser parser = BuildParser(code);
+        Haibt parser = ParserHelper.BuildParser(code);
         var visitor = new StyleVisitor();
         ComponentStyle result = visitor.Visit(parser.css_statement());
         Assert.Equal($"border-radius: {rVal}{unit};\n", result.StringValue);
@@ -84,7 +78,7 @@ public class BasicStylesTest
     [InlineData(" margin:5.958em;\n\r", Em, 5.958f)]
     public void Should_Parse_Single_Margin(string code, string unit, float wVal)
     {
-        HaibtParser parser = BuildParser(code);
+        Haibt parser = ParserHelper.BuildParser(code);
         var visitor = new StyleVisitor();
         ComponentStyle result = visitor.Visit(parser.css_statement());
         Assert.Equal($"margin: {wVal}{unit};\n", result.StringValue);
@@ -98,7 +92,7 @@ public class BasicStylesTest
     [InlineData(" margin:5.958em 0em;\n\r", Em, 5.958f, Em, 0f)]
     public void Should_Parse_Double_Margin(string code, string unit, float mVal, string unit2, float mVal2)
     {
-        HaibtParser parser = BuildParser(code);
+        Haibt parser = ParserHelper.BuildParser(code);
         var visitor = new StyleVisitor();
         ComponentStyle result = visitor.Visit(parser.css_statement());
         Assert.Equal($"margin: {mVal}{unit} {mVal2}{unit2};\n", result.StringValue);
@@ -110,7 +104,7 @@ public class BasicStylesTest
     [InlineData("margin : 10rem 10rem 10rem;", 10f, Rem)]
     public void Should_Parse_Triple_Margin(string code, float mVal, string unit)
     {
-        HaibtParser parser = BuildParser(code);
+        Haibt parser = ParserHelper.BuildParser(code);
         var visitor = new StyleVisitor();
         ComponentStyle result = visitor.Visit(parser.css_statement());
         Assert.Equal($"margin: {mVal}{unit} {mVal}{unit} {mVal}{unit};\n", result.StringValue);
@@ -123,7 +117,7 @@ public class BasicStylesTest
     [InlineData(" padding:5.958em;\n\r", Em, 5.958f)]
     public void Should_Parse_Single_Padding(string code, string unit, float pVal)
     {
-        HaibtParser parser = BuildParser(code);
+        Haibt parser = ParserHelper.BuildParser(code);
         var visitor = new StyleVisitor();
         ComponentStyle result = visitor.Visit(parser.css_statement());
         Assert.Equal($"padding: {pVal}{unit};", result.StringValue);
@@ -137,7 +131,7 @@ public class BasicStylesTest
     [InlineData("border: dotted;\n\r", Px, 1f, "", "dotted")]
     public void Should_Parse_Border_ShortHand(string code, string unit, float? bVal, string color, string style)
     {
-        HaibtParser parser = BuildParser(code);
+        Haibt parser = ParserHelper.BuildParser(code);
         var visitor = new StyleVisitor();
         Regex regex = new("\\s+");
         string expected = regex.Replace($"border: {bVal}{unit} {style} {color}".Trim(), " ");

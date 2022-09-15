@@ -127,7 +127,7 @@ public class ComponentWriter
         WriteComponentPropType(component);
         _sb.Append($"export const {name} = (p: {name}Props) => {{\n");
         WriteProps(component.Properties, name);
-        string tag = DomReactTypes.GetComponentTag(component.Model.Extends);
+        const string tag = "button";
         _sb.AppendLine("// Todo fill the code");
         _sb.Append($"  <{tag} className=");
         var variants = component.Model.Body.Variants;

@@ -1,5 +1,7 @@
-﻿using CrossBind.Compiler.Visitors.Component;
+﻿using CrossBind.Compiler.Parser;
+using CrossBind.Compiler.Visitors.Component;
 using CrossBind.Engine.BaseModels;
+using CrossBind.Engine.ComponentModels;
 
 namespace CrossBind.Compiler.Visitors;
 
@@ -7,7 +9,7 @@ public class UnitVisitor: HaibtBaseVisitor<UnitModel>
 {
     public string FilePath { get; set; } = string.Empty;
     
-    public override UnitModel VisitTranslationUnit(HaibtParser.TranslationUnitContext context)
+    public override UnitModel VisitTranslationUnit(Haibt.TranslationUnitContext context)
     {
         var imports = context.importStatement();
         var importVisitor = new ImportVisitor();
@@ -18,7 +20,7 @@ public class UnitVisitor: HaibtBaseVisitor<UnitModel>
         var components = comps.Select(componentVisitor.VisitCompDeclaration);
         var models = new BindModel[comps.Length + cssRules.Length];
         int index = 0;
-        foreach (var component in components)
+        foreach (ComponentModel component in components)
         {
             models[index] = component;
             index++;

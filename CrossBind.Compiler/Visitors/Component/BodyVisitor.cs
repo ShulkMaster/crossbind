@@ -1,38 +1,50 @@
-﻿using CrossBind.Compiler.Symbol;
+﻿using CrossBind.Compiler.Parser;
+using CrossBind.Compiler.Symbol;
 using CrossBind.Compiler.Typing;
+using CrossBind.Compiler.Visitors.Markup;
 using CrossBind.Compiler.Visitors.Properties;
 using CrossBind.Engine.BaseModels;
 using CrossBind.Engine.ComponentModels;
+using CrossBind.Engine.Markup;
+using CrossBind.Engine.StyleModel;
 
 namespace CrossBind.Compiler.Visitors.Component;
 
 public class BodyVisitor : HaibtBaseVisitor<ComponentBody>
 {
     private readonly TypeManager manager = new();
-    public override ComponentBody VisitBody(HaibtParser.BodyContext context)
+    public override ComponentBody VisitBody(Haibt.BodyContext context)
     {
         var styleVisitor = new StyleVisitor();
         var variantVisitor = new VariantVisitor(styleVisitor);
         var propertyVisitor = new PropertyVisitor(manager, new SymbolTable(null));
-        var body = new ComponentBody();
+        List<ComponentStyle> baseStyles = new();
         foreach (var cssRule in context.css_statement())
         {
-            body.BaseStyles.Add(styleVisitor.Visit(cssRule));
+            baseStyles.Add(styleVisitor.Visit(cssRule));
         }
 
-        foreach (HaibtParser.PropertyContext propertyContext in context.property())
+        List<PropModel> props = new();
+        foreach (Haibt.PropertyContext propertyContext in context.property())
         {
             PropModel prop = propertyVisitor.Visit(propertyContext);
-            body.Props.Add(prop);
+            props.Add(prop);
         }
 
-        foreach (HaibtParser.VariantContext? variant in context.variant())
+        foreach (Haibt.VariantContext? variant in context.variant())
         {
             variantVisitor.Visit(variant);
         }
         
-        body.Variants.AddRange(variantVisitor.map.Values);
+        TagVisitor tv = new();
+        Tag markup = tv.VisitMarkup(context.markup());
 
-        return body;
+        return new ComponentBody
+        {
+            BaseStyles = baseStyles,
+            Props = props,
+            Variants = variantVisitor.map.Values.ToList(),
+            Html = markup,
+        };
     }
 }

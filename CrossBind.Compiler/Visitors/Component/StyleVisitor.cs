@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using CrossBind.Compiler.Parser;
 using CrossBind.Compiler.Visitors.Style;
 using CrossBind.Engine.StyleModel;
 
@@ -9,7 +10,7 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
     public const string BorderRadius = "border-radius";
     private readonly ColorVisitor _color = new ();
 
-    public override ComponentStyle VisitBgColor(HaibtParser.BgColorContext context)
+    public override ComponentStyle VisitBgColor(Haibt.BgColorContext context)
     {
         string color = _color.Visit(context.color_stm());
         var visitBgColor = new ComponentStyle
@@ -20,23 +21,23 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
         return visitBgColor;
     }
 
-    private BorderRule VisitBorderRule(HaibtParser.BorderValueContext context)
+    private BorderRule VisitBorderRule(Haibt.BorderValueContext context)
     {
-        HaibtParser.CssMeasureContext? stroke = context.cssMeasure();
+        Haibt.CssMeasureContext? stroke = context.cssMeasure();
 
         string unit = "px";
         int width = 1;
         if (stroke is not null && stroke.ChildCount > 0)
         {
             unit = stroke.CSS_UNIT()?.GetText() ?? unit;
-            string number = stroke.NUMBER().GetText();
+            string number = stroke.DecimalLiteral().GetText();
             if (int.TryParse(number, out int newWith))
             {
                 width = newWith;
             }
         }
 
-        HaibtParser.Color_stmContext? contextColor = context.color_stm();
+        Haibt.Color_stmContext? contextColor = context.color_stm();
         string? color = null;
         if (contextColor is not null)
         {
@@ -52,14 +53,14 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
         };
     }
 
-    public override ComponentStyle VisitInlineBorder(HaibtParser.InlineBorderContext context)
+    public override ComponentStyle VisitInlineBorder(Haibt.InlineBorderContext context)
     {
         BorderRule value = VisitBorderRule(context.borderValue());
         var border = new StyleBorder(value);
         return border;
     }
 
-    public override ComponentStyle VisitCompoundBorder(HaibtParser.CompoundBorderContext context)
+    public override ComponentStyle VisitCompoundBorder(Haibt.CompoundBorderContext context)
     {
         var borderValues = context.borderValue();
         var borders = new BorderRule[4];
@@ -73,22 +74,22 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
         return border;
     }
 
-    public override ComponentStyle VisitZIndex(HaibtParser.ZIndexContext context)
+    public override ComponentStyle VisitZIndex(Haibt.ZIndexContext context)
     {
         return new ComponentStyle
         {
             Key = "z-index",
-            StringValue = $"z-index: {context.NUMBER().GetText()};\n",
+            StringValue = $"z-index: {context.DecimalLiteral().GetText()};\n",
         };
     }
 
-    private static string FromMeasure(HaibtParser.CssMeasureContext ctx)
+    private static string FromMeasure(Haibt.CssMeasureContext ctx)
     {
         string unit = ctx.CSS_UNIT()?.GetText() ?? "px";
-        return ctx.NUMBER().GetText() + unit;
+        return ctx.DecimalLiteral().GetText() + unit;
     }
 
-    public override ComponentStyle VisitWidth(HaibtParser.WidthContext context)
+    public override ComponentStyle VisitWidth(Haibt.WidthContext context)
     {
         string key = context.Width().GetText();
         string measure = FromMeasure(context.cssMeasure());
@@ -99,7 +100,7 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
         };
     }
 
-    public override ComponentStyle VisitHeight(HaibtParser.HeightContext context)
+    public override ComponentStyle VisitHeight(Haibt.HeightContext context)
     {
         string key = context.Height().GetText();
         string measure = FromMeasure(context.cssMeasure());
@@ -110,7 +111,7 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
         };
     }
     
-    public override ComponentStyle VisitBorderRadius(HaibtParser.BorderRadiusContext context)
+    public override ComponentStyle VisitBorderRadius(Haibt.BorderRadiusContext context)
     {
         string measure = FromMeasure(context.cssMeasure());
         return new ComponentStyle
@@ -120,9 +121,9 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
         };
     }
 
-    private static void VisitClock(HaibtParser.ClockRuleContext ctx, StringBuilder sb)
+    private static void VisitClock(Haibt.ClockRuleContext ctx, StringBuilder sb)
     {
-        foreach (HaibtParser.CssMeasureContext? rule in ctx.cssMeasure())
+        foreach (Haibt.CssMeasureContext? rule in ctx.cssMeasure())
         {
             sb.Append(FromMeasure(rule));
             sb.Append(' ');
@@ -131,7 +132,7 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
         sb.Remove(sb.Length - 1, 1);
     }
 
-    public override ComponentStyle VisitMargin(HaibtParser.MarginContext context)
+    public override ComponentStyle VisitMargin(Haibt.MarginContext context)
     {
         var sb = new StringBuilder("margin: ");
         VisitClock(context.clockRule(), sb);
@@ -143,7 +144,7 @@ public class StyleVisitor : HaibtBaseVisitor<ComponentStyle>
         };
     }
     
-    public override ComponentStyle VisitPadding(HaibtParser.PaddingContext context)
+    public override ComponentStyle VisitPadding(Haibt.PaddingContext context)
     {
         var sb = new StringBuilder("padding: ");
         VisitClock(context.clockRule(), sb);

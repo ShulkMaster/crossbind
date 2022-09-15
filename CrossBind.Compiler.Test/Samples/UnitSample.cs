@@ -6,7 +6,7 @@ public static class UnitSample
         @"
 from ""./dimends"" import { Padding, Vue };
 
-component ButtonApp extends button {
+component ButtonApp {
     backgroundColor : #F0D;
     variant mode;
     variant kind;
