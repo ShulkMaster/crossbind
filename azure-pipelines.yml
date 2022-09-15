@@ -19,8 +19,6 @@ variables:
   Configuration: 'Release'
   win: 'win-x64'
   linux: 'linux-x64'
-  AntlrGen: '-visitor -listener -Dlanguage=CSharp -lib CrossBind.Compiler/Lang CrossBind.Compiler/Lang/Haibt.g4'
-  AntlrOut: '-o CrossBind.Compiler/Parser'
   CEngine: 'CrossBind.Engine\CrossBind.Engine.csproj'
   CEngineTest: 'CrossBind.Engine.Test\CrossBind.Engine.Test.csproj'
   Compiler: 'CrossBind.Compiler\CrossBind.Compiler.csproj'
@@ -86,10 +84,8 @@ jobs:
       - task: PowerShell@2
         displayName: 'Generating Antlr parse Class'
         inputs:
-          targetType: 'inline'
-          script: |
-            java -jar Gen/antlr.jar $(AntlrGen) $(AntlrOut)
-            ls CrossBind.Compiler/Parser
+          filePath: 'Gen\setup.ps1'
+          failOnStderr: true
 
       - task: DotNetCoreCLI@2
         displayName: 'Compile Plugin Interface'
