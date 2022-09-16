@@ -1,5 +1,7 @@
 ﻿# CrossBind
 
+<img src="icon.png" alt="crossbind" width="300"/>
+
 CrossBind a transpiler for the DSL called Haibt. It is tailored towards declarative
 UI components that can be retarget to other JS framework components
 code. Currently supported official are Vue and React but extendable via plugin API.
@@ -102,6 +104,7 @@ The following projects are part of the CrossBind infrastructure:
         </td>
     </tr>
 </table>
+
 # :link: Links
 
 - [Official Website](https://crossbind.dev/)
