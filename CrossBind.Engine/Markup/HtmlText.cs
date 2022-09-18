@@ -8,6 +8,6 @@ public sealed class HtmlText: HtmlContent
 
     public string GetCuratedString()
     {
-        return string.Empty;
+        return Value;
     }
 }

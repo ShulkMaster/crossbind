@@ -2,7 +2,7 @@
 
 public abstract class HtmlContent
 {
-    private string Value { get; }
+    protected string Value { get; }
 
     protected HtmlContent(string value)
     {

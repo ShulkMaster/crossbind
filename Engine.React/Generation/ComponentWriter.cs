@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using CrossBind.Engine.BaseModels;
 using CrossBind.Engine.ComponentModels;
+using CrossBind.Engine.Markup;
 using CrossBind.Engine.Types;
 using Engine.React.Component;
 using Engine.React.Extensions;
@@ -127,22 +128,97 @@ public class ComponentWriter
         WriteComponentPropType(component);
         _sb.Append($"export const {name} = (p: {name}Props) => {{\n");
         WriteProps(component.Properties, name);
-        const string tag = "button";
         _sb.AppendLine("// Todo fill the code");
-        _sb.Append($"  <{tag} className=");
-        var variants = component.Model.Body.Variants;
-        if (variants.Any())
+        WriteMarkup(component.Model);
+        _sb.Append("};");
+    }
+
+    private void WriteMarkup(ComponentModel component)
+    {
+        var variants = component.Body.Variants;
+        Tag root = component.Body.Html;
+        if (root is NoTag) return;
+
+        _sb.AppendLine("  return (");
+        WriteMarkup(component.Body.Html, variants, 2);
+        _sb.AppendLine("  );");
+    }
+
+    private void WriteMarkup(Tag tag, List<ComponentVariant> vars, int level)
+    {
+        switch (tag)
         {
-            _sb.Append($"{{`{name}");
-            foreach (ComponentVariant variant in variants)
+            case NoTag: return;
+            case NativeTag navTag:
             {
-                _sb.Append($" ${{{variant.Name}}}");
+                _sb.Append(' ', level * 2);
+                _sb.Append($"<{navTag.Name}");
+                WriteAttribs(tag);
+                if (navTag.Content.Any())
+                {
+                    _sb.AppendLine(">");
+                    foreach (HtmlContent content in navTag.Content)
+                    {
+                        WriteContent(content, vars, level + 1);
+                    }
+                    _sb.Append(' ', level * 2);
+                    _sb.AppendLine($"</{navTag.Name}>");
+                }
+                else
+                {
+                    _sb.AppendLine("/>");
+                }
+                return;
             }
-
-            _sb.Append("`}");
+            case ComponentTag cTag:
+            {
+                _sb.Append(' ', level * 2);
+                _sb.Append($"<{cTag.Name}");
+                WriteAttribs(tag);
+                if (cTag.Content.Any())
+                {
+                    _sb.AppendLine(">");
+                    foreach (HtmlContent content in cTag.Content)
+                    {
+                        WriteContent(content, vars,level + 1);
+                    }
+                    _sb.Append(' ', level * 2);
+                    _sb.AppendLine($"</{cTag.Name}>");
+                }
+                else
+                {
+                    _sb.AppendLine("/>");
+                }
+                return;
+                
+            }
         }
+    }
 
-        _sb.AppendLine(" {...p} />;\n};");
+    private void WriteContent(HtmlContent content, List<ComponentVariant> vars, int level)
+    {
+        switch (content)
+        {
+            case HtmlText text:
+            {
+                _sb.Append(' ', level * 2);
+                _sb.AppendLine(text.GetCuratedString());
+                return;
+            }
+            case Tag tag:
+            {
+                WriteMarkup(tag, vars, level);
+                return;
+            }
+        }
+    }
+
+    private void WriteAttribs(Tag tag)
+    {
+        foreach (PropModel tagAttribute in tag.Attributes)
+        {
+            _sb.Append($" {tagAttribute.Name}={{{tagAttribute.Type.Name}}}");
+        }
     }
 
     private void WriteComponentPropType(ReactComponent component)
