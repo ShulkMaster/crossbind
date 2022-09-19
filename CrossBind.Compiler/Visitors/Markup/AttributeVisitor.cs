@@ -32,7 +32,6 @@ public class AttributeVisitor: HaibtBaseVisitor<AttributeModel>
         string text = attribVal.objectExpressionSequence().GetText();
         return new AssignAttributeModel(name, new StringLiteralType("", ""))
         {
-            Bind = true,
             Identifier = text,
         };
     }

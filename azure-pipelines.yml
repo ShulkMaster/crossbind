@@ -14,7 +14,7 @@ pool:
 variables:
   major: 0
   minor: 2
-  patch: 0
+  patch: 2
   prefix: $(major).$(minor).$(patch)
   Configuration: 'Release'
   win: 'win-x64'

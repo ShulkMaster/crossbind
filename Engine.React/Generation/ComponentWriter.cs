@@ -225,12 +225,17 @@ public class ComponentWriter
                 case ConstAttributeModel cAttrib:
                 {
                     _sb.Append($" {cAttrib.Name}={{{cAttrib.ConsValue}}}");
-                    return;
+                    continue;
                 }
                 case AssignAttributeModel aAttrib:
                 {
-                    _sb.Append($" {aAttrib.Name}={{{aAttrib.Identifier}}}");
-                    return;
+                    if (aAttrib.Bind)
+                    {
+                        _sb.Append($" {aAttrib.Name}={{{aAttrib.Identifier}}}");
+                        continue;
+                    }
+                    _sb.Append($" {aAttrib.Name}={aAttrib.Identifier}");
+                    continue;
                 }
             }
         }
