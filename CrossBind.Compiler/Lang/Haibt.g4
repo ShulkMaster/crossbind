@@ -26,7 +26,7 @@ compDeclaration:
     COMPONENT IDENTIFIER '{' body '}';
 
 body:
-    (css_statement | variant | script | property)* markup
+    (css_statement | variant | script | property)* markup?
 ;
 
 css_statement: 
@@ -102,7 +102,7 @@ singleExpression
     | '(' expressionSequence ')' # ParenthesizedExpression
     ;
 
-markup: htmlElement*;
+markup: htmlElement+;
 
 htmlElement
     : '<' IDENTIFIER htmlAttribute* '>' htmlContent '<' '/' IDENTIFIER '>' #htmlChildren
@@ -115,8 +115,9 @@ htmlContent
     ;
     
 htmlAttribute 
-    : IDENTIFIER Assign htmlAttributeValue
-    | IDENTIFIER;
+    : IDENTIFIER '=' htmlAttributeValue #attributeAssign
+    | IDENTIFIER #attributeBoolean
+    | '[' IDENTIFIER ']' #attributeBind;
 
 htmlChardata
     : ~('<'|'{')+

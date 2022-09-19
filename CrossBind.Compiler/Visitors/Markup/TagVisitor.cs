@@ -2,10 +2,8 @@
 using Antlr4.Runtime.Tree;
 using CrossBind.Compiler.Native;
 using CrossBind.Compiler.Parser;
-using CrossBind.Engine.BaseModels;
 using CrossBind.Engine.ComponentModels;
 using CrossBind.Engine.Markup;
-using CrossBind.Engine.Types;
 
 namespace CrossBind.Compiler.Visitors.Markup;
 
@@ -131,12 +129,13 @@ public class TagVisitor : HaibtBaseVisitor<Tag>
         return contents;
     }
 
-    private static List<PropModel> VisitAttribs(Haibt.HtmlAttributeContext[] attribs)
+    private static List<AttributeModel> VisitAttribs(Haibt.HtmlAttributeContext[] attribs)
     {
-        var x = attribs.Select(a => new PropModel(
-            a.IDENTIFIER().GetText()
-            , Primitive.String(false)
+        var list = new List<AttributeModel>(attribs.Length);
+        var attribVisitor = new AttributeVisitor();
+        list.AddRange(attribs.Select(
+            attrib => attribVisitor.Visit(attrib)
         ));
-        return x.ToList();
+        return list;
     }
 }

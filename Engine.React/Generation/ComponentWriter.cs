@@ -161,6 +161,7 @@ public class ComponentWriter
                     {
                         WriteContent(content, vars, level + 1);
                     }
+
                     _sb.Append(' ', level * 2);
                     _sb.AppendLine($"</{navTag.Name}>");
                 }
@@ -168,6 +169,7 @@ public class ComponentWriter
                 {
                     _sb.AppendLine("/>");
                 }
+
                 return;
             }
             case ComponentTag cTag:
@@ -180,8 +182,9 @@ public class ComponentWriter
                     _sb.AppendLine(">");
                     foreach (HtmlContent content in cTag.Content)
                     {
-                        WriteContent(content, vars,level + 1);
+                        WriteContent(content, vars, level + 1);
                     }
+
                     _sb.Append(' ', level * 2);
                     _sb.AppendLine($"</{cTag.Name}>");
                 }
@@ -189,8 +192,8 @@ public class ComponentWriter
                 {
                     _sb.AppendLine("/>");
                 }
+
                 return;
-                
             }
         }
     }
@@ -215,9 +218,21 @@ public class ComponentWriter
 
     private void WriteAttribs(Tag tag)
     {
-        foreach (PropModel tagAttribute in tag.Attributes)
+        foreach (AttributeModel tagAttribute in tag.Attributes)
         {
-            _sb.Append($" {tagAttribute.Name}={{{tagAttribute.Type.Name}}}");
+            switch (tagAttribute)
+            {
+                case ConstAttributeModel cAttrib:
+                {
+                    _sb.Append($" {cAttrib.Name}={{{cAttrib.ConsValue}}}");
+                    return;
+                }
+                case AssignAttributeModel aAttrib:
+                {
+                    _sb.Append($" {aAttrib.Name}={{{aAttrib.Identifier}}}");
+                    return;
+                }
+            }
         }
     }
 
@@ -244,6 +259,7 @@ public class ComponentWriter
                         _sb.Append($" {sl.Value} |");
                         continue;
                     }
+
                     _sb.Append($" {type.Name} |");
                 }
 
