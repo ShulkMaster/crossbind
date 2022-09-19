@@ -15,6 +15,11 @@ public static class NativeHtml
         {
             NativeTags.Add(tag);
         }
+        
+        foreach (string tag in TagList.MediaTags)
+        {
+            NativeTags.Add(tag);
+        }
     }
 
     public static bool IsNative(string tagName)

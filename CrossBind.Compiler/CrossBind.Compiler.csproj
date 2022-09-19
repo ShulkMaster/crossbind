@@ -11,7 +11,7 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageTags>DSL;Haibth;Transpiler;Frontend;Parser</PackageTags>
-        <RepositoryUrl>https://dev.azure.com/sovize/_git/CrossBind</RepositoryUrl>
+        <RepositoryUrl>https://github.com/ShulkMaster/crossbind</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <TargetFramework>net6.0</TargetFramework>

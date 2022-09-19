@@ -1,10 +1,9 @@
-﻿using Antlr4.Runtime.Tree;
+﻿using System.Text;
+using Antlr4.Runtime.Tree;
 using CrossBind.Compiler.Native;
 using CrossBind.Compiler.Parser;
-using CrossBind.Engine.BaseModels;
 using CrossBind.Engine.ComponentModels;
 using CrossBind.Engine.Markup;
-using CrossBind.Engine.Types;
 
 namespace CrossBind.Compiler.Visitors.Markup;
 
@@ -52,17 +51,55 @@ public class TagVisitor : HaibtBaseVisitor<Tag>
         }
 
 
-        return new ComponentTag(new ComponentModel());
+        return new ComponentTag(new ComponentModel())
+        {
+            Content = htmlContents,
+            Attributes = attribs
+        };
     }
 
     public override Tag VisitHtmlOptional(Haibt.HtmlOptionalContext context)
     {
-        return base.VisitHtmlOptional(context);
+        ITerminalNode? tags = context.IDENTIFIER();
+        string tName = tags?.GetText() ?? string.Empty;
+        bool isNative = NativeHtml.IsNative(tName);
+        var attribs = VisitAttribs(context.htmlAttribute());
+
+        if (isNative)
+        {
+            NativeTag native = new(tName)
+            {
+                Attributes = attribs
+            };
+            return native;
+        }
+
+        return new ComponentTag(new ComponentModel
+        {
+            Name = tName
+        })
+        {
+            Attributes = attribs,
+        };
     }
 
     public override Tag VisitHtmlSingle(Haibt.HtmlSingleContext context)
     {
-        return base.VisitHtmlSingle(context);
+        ITerminalNode? tags = context.IDENTIFIER();
+        string tName = tags?.GetText() ?? string.Empty;
+        bool isSingleTag = tName == "img";
+        var attribs = VisitAttribs(context.htmlAttribute());
+
+        if (isSingleTag)
+        {
+            NativeTag native = new(tName)
+            {
+                Attributes = attribs
+            };
+            return native;
+        }
+
+        return NoTag.Instance;
     }
 
     private IEnumerable<HtmlContent> VisitHtmlContents(Haibt.HtmlContentContext context)
@@ -76,17 +113,29 @@ public class TagVisitor : HaibtBaseVisitor<Tag>
                 contents.Add(t);
                 continue;
             }
-            contents.Add(new HtmlText(child.GetText()));
+
+            int children = child.ChildCount;
+            StringBuilder acumm = new();
+            for (int i = 0; i < children; i++)
+            {
+                IParseTree xd = child.GetChild(i);
+                acumm.Append(xd.GetText());
+                acumm.Append(' ');
+            }
+
+            contents.Add(new HtmlText(acumm.ToString()));
         }
+
         return contents;
     }
 
-    private static List<PropModel> VisitAttribs(Haibt.HtmlAttributeContext[] attribs)
+    private static List<AttributeModel> VisitAttribs(Haibt.HtmlAttributeContext[] attribs)
     {
-        var x = attribs.Select(a => new PropModel(
-            a.IDENTIFIER().GetText()
-            , Primitive.String(false)
+        var list = new List<AttributeModel>(attribs.Length);
+        var attribVisitor = new AttributeVisitor();
+        list.AddRange(attribs.Select(
+            attrib => attribVisitor.Visit(attrib)
         ));
-        return x.ToList();
+        return list;
     }
 }

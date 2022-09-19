@@ -11,5 +11,10 @@ internal static class TagList
     {
         "p", "b", "strong", "span"
     };
-    
+
+    internal static readonly string[] MediaTags =
+    {
+        "img", "video", "audio", "canvas"
+    };
+
 }
