@@ -9,8 +9,9 @@ namespace CrossBind.Compiler.Visitors.Markup;
 
 public class TagVisitor : HaibtBaseVisitor<Tag>
 {
-    public override Tag VisitMarkup(Haibt.MarkupContext context)
+    public override Tag VisitMarkup(Haibt.MarkupContext? context)
     {
+        if(context is null) return NoTag.Instance;
         var elements = context.htmlElement();
         return elements.Length switch
         {

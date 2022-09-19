@@ -137,9 +137,14 @@ public class ComponentWriter
     {
         var variants = component.Body.Variants;
         Tag root = component.Body.Html;
-        if (root is NoTag) return;
+        _sb.Append("  return");
+        if (root is NoTag)
+        {
+            _sb.AppendLine(" null;");
+            return;
+        }
 
-        _sb.AppendLine("  return (");
+        _sb.AppendLine(" (");
         WriteMarkup(component.Body.Html, variants, 2);
         _sb.AppendLine("  );");
     }
@@ -234,6 +239,7 @@ public class ComponentWriter
                         _sb.Append($" {aAttrib.Name}={{{aAttrib.Identifier}}}");
                         continue;
                     }
+
                     _sb.Append($" {aAttrib.Name}={aAttrib.Identifier}");
                     continue;
                 }
