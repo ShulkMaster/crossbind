@@ -128,7 +128,7 @@ public class ComponentWriter
         WriteComponentPropType(component);
         _sb.Append($"export const {name} = (p: {name}Props) => {{\n");
         WriteProps(component.Properties, name);
-        _sb.AppendLine("// Todo fill the code");
+        _sb.AppendLine("  // Todo fill the code");
         WriteMarkup(component.Model);
         _sb.Append("};");
     }

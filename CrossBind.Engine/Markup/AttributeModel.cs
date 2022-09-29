@@ -1,4 +1,5 @@
-﻿using CrossBind.Engine.Types;
+﻿using CrossBind.Engine.BaseModels;
+using CrossBind.Engine.Types;
 
 namespace CrossBind.Engine.Markup;
 
@@ -32,4 +33,20 @@ public sealed class AssignAttributeModel : AttributeModel
     {
     }
 
+}
+
+public sealed class ClassAttributeModel : AttributeModel
+{
+    private readonly List<PropModel> _styleProp = new();
+
+    public IEnumerable<PropModel> Style => _styleProp;
+
+    public ClassAttributeModel(): base( "className", Primitive.String(false))
+    {
+    }
+
+    public void AddClasName(PropModel prop)
+    {
+        _styleProp.Add(prop);
+    }
 }

@@ -97,6 +97,7 @@ singleExpression
     | singleExpression ('==' | '!=' | '===' | '!==') singleExpression # EqualityExpression
     | singleExpression And singleExpression  # LogicalAndExpression
     | singleExpression Or singleExpression # LogicalOrExpression
+    | identifier # IdentifierExpression
     | literal # LiteralExpression
     | htmlElement # HtmlElementExpression
     | '(' expressionSequence ')' # ParenthesizedExpression
@@ -144,3 +145,4 @@ numericLiteral
     : DecimalLiteral
     ;
 
+identifier: IDENTIFIER;
