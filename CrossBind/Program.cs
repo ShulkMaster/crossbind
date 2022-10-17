@@ -1,14 +1,15 @@
 ﻿using System.Reactive.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using CommandLine;
 using CrossBind.Commands;
 using CrossBind.Compiler;
 using CrossBind.Config;
 using CrossBind.Engine;
 using CrossBind.Engine.Generated;
 using CrossBind.Plugin;
-using LanguageExt;
+using MediatR;
+using Unit = LanguageExt.Unit;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CrossBind;
 
@@ -17,23 +18,38 @@ public static class Program
     private static readonly ManualResetEvent QuitEvent = new(false);
     private static readonly PluginLoader Loader = new();
     private static CrossConfig _conf = new();
+    private static readonly CancellationTokenSource Source = new();
 
-    public static int Main(string[] args)
+    static Program()
     {
-        var commander = Parser.Default;
+        AppDomain.CurrentDomain.ProcessExit += Termination;
+    }
 
-        Console.CancelKeyPress += (_, evt) =>
+    private static void Termination(object? sender, EventArgs eventArgs)
+    {
+        if (!Source.IsCancellationRequested)
         {
-            QuitEvent.Set();
-            evt.Cancel = true;
-        };
+            Source.Cancel();
+        }
 
-        return commander.ParseArguments<Project, Compile, int>(args)
-            .MapResult<Project, Compile, int>(
-                ProjectCommand,
-                CompileCommandProxy,
-                ErrorHandler
-            );
+        Source.Dispose();
+    }
+
+    public static async Task<int> Main(string[] args)
+    {
+        var commandParser = CommandLine.Parser.Default;
+        var parserResult = commandParser.ParseArguments(args, typeof(Project), typeof(Compile));
+        if (parserResult.Errors.Any())
+        {
+            return -1;
+        }
+
+        ServiceProvider sp = Setup.Init();
+        var mediator = sp.GetService<IMediator>()!;
+        var req = parserResult.Value as IRequest<int>;
+        int result = await mediator.Send(req!);
+        await sp.DisposeAsync();
+        return result;
     }
 
     private static int LoadConfig(string configFile)
@@ -88,6 +104,7 @@ public static class Program
         {
             _conf.OutDir = command.OutputDir;
         }
+
         if (returnCode != 0)
         {
             return returnCode;
@@ -200,16 +217,6 @@ public static class Program
 
         if (failedUnits <= 0) return 0;
         Console.WriteLine("Total failed units {0}", failedUnits);
-        return -1;
-    }
-
-    private static int ErrorHandler(IEnumerable<Error> errors)
-    {
-        foreach (var error in errors)
-        {
-            Console.WriteLine(error);
-        }
-
         return -1;
     }
 }

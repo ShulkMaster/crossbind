@@ -1,11 +1,11 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
-using CrossBind.Compiler.Parser;
+using CrossBind.Parser.Implementation;
 using CrossBind.Compiler.Symbol;
 using CrossBind.Compiler.Typing;
 using CrossBind.Engine.BaseModels;
 using CrossBind.Engine.Types;
-using static CrossBind.Compiler.Parser.Haibt;
+using static CrossBind.Parser.Implementation.Haibt;
 
 namespace CrossBind.Compiler.Visitors.Properties;
 

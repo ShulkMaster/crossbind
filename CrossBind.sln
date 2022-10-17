@@ -18,6 +18,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrossBind.Engine.Test", "Cr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "React.EngineTest", "React.EngineTest\React.EngineTest.csproj", "{9FBC319D-BA46-4D59-8994-B5869B5C2D21}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossBind.Parser", "CrossBind.Parser\CrossBind.Parser.csproj", "{55EFAC90-4B7E-4ABB-83C8-39D384526A25}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +92,14 @@ Global
 		{9FBC319D-BA46-4D59-8994-B5869B5C2D21}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9FBC319D-BA46-4D59-8994-B5869B5C2D21}.Release|x64.ActiveCfg = Release|Any CPU
 		{9FBC319D-BA46-4D59-8994-B5869B5C2D21}.Release|x64.Build.0 = Release|Any CPU
+		{55EFAC90-4B7E-4ABB-83C8-39D384526A25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55EFAC90-4B7E-4ABB-83C8-39D384526A25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55EFAC90-4B7E-4ABB-83C8-39D384526A25}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{55EFAC90-4B7E-4ABB-83C8-39D384526A25}.Debug|x64.Build.0 = Debug|Any CPU
+		{55EFAC90-4B7E-4ABB-83C8-39D384526A25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55EFAC90-4B7E-4ABB-83C8-39D384526A25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55EFAC90-4B7E-4ABB-83C8-39D384526A25}.Release|x64.ActiveCfg = Release|Any CPU
+		{55EFAC90-4B7E-4ABB-83C8-39D384526A25}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

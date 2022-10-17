@@ -1,5 +1,5 @@
 ﻿using Antlr4.Runtime.Tree;
-using CrossBind.Compiler.Parser;
+using CrossBind.Parser.Implementation;
 using CrossBind.Compiler.Test.Helper;
 using CrossBind.Compiler.Test.Samples;
 using CrossBind.Compiler.Visitors.Component;

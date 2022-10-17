@@ -1,4 +1,4 @@
-﻿using CrossBind.Compiler.Parser;
+﻿using CrossBind.Parser.Implementation;
 using CrossBind.Engine.ComponentModels;
 
 namespace CrossBind.Compiler.Visitors.Component;

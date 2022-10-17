@@ -2,9 +2,21 @@
 
 namespace CrossBind.Compiler.Typing;
 
-public class TypeManager
+public class TypeManager : ITypeManager
 {
     private readonly Dictionary<string, TypeModel> _types = new();
+
+    public TypeManager()
+    {
+        Primitive primitive = Primitive.Number(false);
+        _types.Add(primitive.FQDN, primitive);
+        
+        primitive = Primitive.String(false);
+        _types.Add(primitive.FQDN, primitive);
+        
+        primitive = Primitive.Bool(false);
+        _types.Add(primitive.FQDN, primitive);
+    }
 
     public bool RegisterType(TypeModel model)
     {

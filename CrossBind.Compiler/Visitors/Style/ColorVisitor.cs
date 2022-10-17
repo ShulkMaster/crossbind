@@ -1,4 +1,4 @@
-﻿using CrossBind.Compiler.Parser;
+﻿using CrossBind.Parser.Implementation;
 
 namespace CrossBind.Compiler.Visitors.Style;
 

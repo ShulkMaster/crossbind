@@ -1,7 +1,7 @@
 ﻿using System.Text;
-using CrossBind.Compiler.Parser;
 using CrossBind.Compiler.Visitors.Style;
 using CrossBind.Engine.StyleModel;
+using CrossBind.Parser.Implementation;
 
 namespace CrossBind.Compiler.Visitors.Component;
 

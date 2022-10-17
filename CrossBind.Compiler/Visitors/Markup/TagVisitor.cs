@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Antlr4.Runtime.Tree;
 using CrossBind.Compiler.Native;
-using CrossBind.Compiler.Parser;
+using CrossBind.Parser.Implementation;
 using CrossBind.Engine.ComponentModels;
 using CrossBind.Engine.Markup;
 

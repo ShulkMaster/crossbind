@@ -1,6 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using Antlr4.Runtime;
-using CrossBind.Compiler.Parser;
+using CrossBind.Parser.Implementation;
 using CrossBind.Compiler.Test.Helper;
 using CrossBind.Compiler.Visitors.Component;
 using CrossBind.Engine.StyleModel;

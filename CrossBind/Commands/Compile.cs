@@ -1,9 +1,10 @@
 ﻿using CommandLine;
+using MediatR;
 
 namespace CrossBind.Commands;
 
 [Verb("compile", isDefault: true, HelpText = "Compiles a project or file with the supplied options")]
-public class Compile
+public class Compile: IRequest<int>
 {
     [Option('o', "output", HelpText = "sets the output of the transpile files", Default = "out")]
     public string OutputDir { get; set; } = "out";

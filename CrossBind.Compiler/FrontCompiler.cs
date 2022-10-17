@@ -1,6 +1,6 @@
 ﻿using Antlr4.Runtime;
 using CrossBind.Compiler.Error;
-using CrossBind.Compiler.Parser;
+using CrossBind.Parser.Implementation;
 using CrossBind.Compiler.Visitors;
 using CrossBind.Engine.BaseModels;
 using LanguageExt.Common;

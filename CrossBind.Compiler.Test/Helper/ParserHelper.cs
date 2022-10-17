@@ -1,9 +1,9 @@
 ﻿using Antlr4.Runtime;
-using CrossBind.Compiler.Parser;
+using CrossBind.Parser.Implementation;
 
 namespace CrossBind.Compiler.Test.Helper;
 
-public class ParserHelper
+public static class ParserHelper
 {
     public static Haibt BuildParser(string code)
     {
